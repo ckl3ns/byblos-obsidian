@@ -1,9 +1,10 @@
 """Testes para graph_builder.py — bidirecionalidade, deduplicação e métricas."""
 import sys
+from types import SimpleNamespace
 sys.path.insert(0, "c:/workspace/byblos-obsidian/agents/scripts")
 
 from graph_builder import (
-    _build_edges_from_ref, _deduplicate_edges, _edge_type_from_ref, _book,
+    _build_edges_from_ref, _deduplicate_edges, _edge_type_from_ref, _book, build_graph,
 )
 from ntsk_parser import NTSKRef
 
@@ -152,3 +153,64 @@ class TestBidirectionalIntegrity:
         assert fwd["target"] == inv["source"]
         assert inv["inferred"] is True
         assert fwd["inferred"] is False
+
+
+def _verse_node(
+    referencia: str,
+    sigla: str,
+    livro: str,
+    capitulo: int,
+    versiculo: int,
+    ntsk_raw: str | None = None,
+):
+    return SimpleNamespace(
+        node_type="versiculo",
+        referencia=referencia,
+        sigla=sigla,
+        livro=livro,
+        capitulo=capitulo,
+        versiculo=versiculo,
+        testamento="NT",
+        canon_cristao="NT",
+        ntsk_raw=ntsk_raw,
+    )
+
+
+class TestBuildGraph:
+    """build_graph deve incluir todos os versículos como nós."""
+
+    def test_verse_without_ntsk_appears_as_node_with_zero_refs(self):
+        nodes = [
+            _verse_node("Gn 1.1", "Gn", "Gênesis", 1, 1, "Jn 3:16."),
+            _verse_node("Jo 3.16", "Jo", "João", 3, 16, None),
+        ]
+
+        graph = build_graph(nodes)
+
+        metas = {n["id"]: n for n in graph["nodes"]}
+        assert len(graph["nodes"]) == 2
+        assert metas["Jo 3.16"]["ref_count"] == 0
+        assert metas["Jo 3.16"]["strong_h"] == []
+        assert metas["Jo 3.16"]["strong_g"] == []
+
+    def test_valid_target_without_ntsk_is_not_unresolved(self):
+        nodes = [
+            _verse_node("Gn 1.1", "Gn", "Gênesis", 1, 1, "Jn 3:16."),
+            _verse_node("Jo 3.16", "Jo", "João", 3, 16, None),
+        ]
+
+        graph = build_graph(nodes)
+
+        assert "Jo 3.16" not in graph["stats"]["unresolved_targets"]
+        assert graph["stats"]["unresolved_count"] == 0
+
+    def test_truly_invalid_target_remains_unresolved(self):
+        nodes = [
+            _verse_node("Gn 1.1", "Gn", "Gênesis", 1, 1, "Mt 99:99."),
+            _verse_node("Jo 3.16", "Jo", "João", 3, 16, None),
+        ]
+
+        graph = build_graph(nodes)
+
+        assert "Mt 99.99" in graph["stats"]["unresolved_targets"]
+        assert graph["stats"]["unresolved_count"] == 1
