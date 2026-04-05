@@ -75,13 +75,17 @@ Toda afirmação factual deve conter:
 Escala de autoridade:
 | Nível | Tipo | Exemplos |
 |-------|------|---------|
-| 1 | Texto canônico | KJV, BKJ, NA28, BHS |
-| 2 | Léxico primário | BDAG, BDB, HALOT, TDNT |
-| 3 | Dicionário especializado | AYBD, NIDB, IVP-Black series, DDD, EAC |
-| 4 | Dicionário teológico geral | EDT, DTIB, DBI-R |
-| 5 | Inferência do agente |
+| 1 | Texto bíblico primário | BHS, NA28, LXX, BKJ, KJV |
+| 2 | Léxicos técnicos | BDAG, BDB, HALOT, TDNT, Strong |
+| 3 | Comentários exegéticos e dicionários especializados | AYBD, NIDB, IVP-Black series, DDD, EAC, ICC, NICNT, NICOT, WBC, Hermeneia |
+| 4 | Teologia sistemática | EDT, DTIB, DBI-R, Bavinck, Berkhof, Grudem |
+| 5 | Periódicos acadêmicos | JBL, NTS, JETS, WTJ |
+| 6 | Obras populares | Referência apenas, nunca suporte doutrinário |
+| — | Inferência do agente | Marcada explicitamente como `[INFERÊNCIA DO AGENTE]` |
 
 Inferências vão EXCLUSIVAMENTE em `## Lacunas Identificadas`, marcadas `[INFERÊNCIA DO AGENTE]`.
+
+**Afirmações em seções factuais de `vault/wiki/` exigem Nível 1-3 mínimo.**
 
 ---
 
@@ -109,14 +113,21 @@ RULE → HIPÓTESE (rebaixamento) quando:
 
 ### Domínios de knowledge/
 
-Subdiretórios criados conforme a necessidade. Exemplos canônicos:
+Subdiretórios criados conforme a necessidade. Domínios implementados:
 
 | Domínio | Cobertura |
 |---------|----------|
+| **Teológicos** ||
+| `cristologia/` | Pessoa e obra de Cristo |
+| `soteriologia/` | Doutrina da salvação |
+| `pneumatologia/` | Doutrina do Espírito Santo |
+| `escatologia/` | Doutrina das últimas coisas |
+| **Por Corpus** ||
 | `paulinas/` | Cartas Paulinas — teologia, contexto, autoria |
 | `evangelhos/` | Evangelhos Sinóticos e João |
+| **Metodológicos** ||
 | `hermeneutica/` | Princípios de interpretação |
-| `historia/` | Contexto histórico-cultural |
+| `historia-da-interpretacao/` | Contexto histórico-cultural e história da exegese |
 | `linguistica/` | Hebraico / Grego — padrões identificados |
 
 ### Regras do ResearchAgent para knowledge/
@@ -307,12 +318,12 @@ python -c "from vault_parser import parse_file; n=parse_file('Bíblia/Mt-1.1.md'
 **Proibições:** modificar frontmatter; alterar KJV/BKJ; alterar navegação
 
 ### WikiCompilerAgent
-**Responsabilidade:** Criar/manter artigos em `wiki/conceitos/`, `wiki/pessoas/`, `wiki/temas/`  
+**Responsabilidade:** Criar/manter artigos em `wiki/conceitos/`, `wiki/autores/`, `wiki/temas/`, `wiki/passagens/`  
 **Acionamento:** conceito aparece em 3+ versículos sem artigo próprio
 
 ### ResearchAgent
 **Responsabilidade:** Q&A contra o vault + gestão de `vault/knowledge/`  
-**Output Q&A:** `reports/{YYYY-MM-DD}_{slug}.md` com seções: Resposta / Fatos Citados / Inferências / Lacunas / Versículos Relacionados  
+**Output Q&A:** `vault/reports/qa/YYYY-MM-DD_{slug}.md` com seções: Resposta / Fatos Citados / Inferências / Lacunas / Versículos Relacionados  
 **Output knowledge:** proposta de entradas em `knowledge/`, `hypotheses/` ou `rules/` — sempre com flag `[PROPOSTA — aguarda aprovação]`  
 **Regra:** toda sessão de Q&A deve terminar com ao menos 1 proposta de classificação epistêmica ou justificativa explícita de por que nenhuma entry é cabível
 
