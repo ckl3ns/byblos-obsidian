@@ -121,13 +121,17 @@ def build_graph(nodes) -> dict:
     forward_by_type: dict = defaultdict(int)
     inverse_by_type: dict = defaultdict(int)
 
-    # ── 1ª passagem: nodes + edges forward ────────────────────────────────
+    # ── 1ª passagem: registrar todos os nós de versículo ──────────────────
     for node in nodes:
-        if node.node_type != "versiculo" or not node.ntsk_raw:
+        if node.node_type != "versiculo":
             continue
 
         source_id = node.referencia
-        r = parse_ntsk_block(node.ntsk_raw, source_id)
+        r = (
+            parse_ntsk_block(node.ntsk_raw, source_id)
+            if node.ntsk_raw else
+            {"total_refs": 0, "refs": [], "strong_h": [], "strong_g": []}
+        )
 
         metas.append({
             "id":           source_id,
@@ -141,6 +145,9 @@ def build_graph(nodes) -> dict:
             "strong_h":     r["strong_h"],
             "strong_g":     r["strong_g"],
         })
+
+        if not node.ntsk_raw:
+            continue
 
         for ref in r["refs"]:
             if not ref.book_vault:
