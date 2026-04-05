@@ -1,14 +1,26 @@
 """Testes para raw_searcher.py — layout real de raw/ e obras fragmentadas."""
 import sys
+import uuid
+from pathlib import Path
+
 sys.path.insert(0, "c:/workspace/byblos-obsidian/agents/scripts")
 
 import raw_searcher
 from raw_searcher import RawSearcher
 
+TEST_TMP_ROOT = Path("c:/workspace/byblos-obsidian/.pytest_workspace")
+TEST_TMP_ROOT.mkdir(parents=True, exist_ok=True)
+
+
+def _test_dir(name: str) -> Path:
+    path = TEST_TMP_ROOT / f"{name}-{uuid.uuid4().hex}"
+    path.mkdir(parents=True, exist_ok=True)
+    return path
+
 
 class TestRawSearcher:
-    def test_busca_em_obra_fragmentada_varre_multiplos_arquivos(self, tmp_path, monkeypatch):
-        raw_root = tmp_path / "raw"
+    def test_busca_em_obra_fragmentada_varre_multiplos_arquivos(self, monkeypatch):
+        raw_root = _test_dir("raw-search-multi") / "raw"
         multi_dir = raw_root / "dicionarios-enciclopedias" / "Colecao"
         multi_dir.mkdir(parents=True)
         (multi_dir / "A.txt").write_text("primeira linha\nnada aqui\n", encoding="utf-8")
@@ -27,8 +39,8 @@ class TestRawSearcher:
             "[Fonte: raw/dicionarios-enciclopedias/Colecao/B.txt | Obra: TST | Nível: 3]"
         )
 
-    def test_busca_em_arquivo_unico_usa_path_exato(self, tmp_path, monkeypatch):
-        raw_root = tmp_path / "raw"
+    def test_busca_em_arquivo_unico_usa_path_exato(self, monkeypatch):
+        raw_root = _test_dir("raw-search-single") / "raw"
         single = raw_root / "dicionarios-enciclopedias" / "single.txt"
         single.parent.mkdir(parents=True)
         single.write_text("Alpha beta gamma\n", encoding="utf-8")
