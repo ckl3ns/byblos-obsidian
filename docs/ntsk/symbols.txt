@@ -1,0 +1,88 @@
+SYMBOLS AND ABBREVIATIONS
+
+
+
+Below is an explanation of the symbols and abbreviations used in this edition of The New Treasury of Scripture Knowledge. (The extended back jacket flap lists all of these and, removed, may be used as a bookmark.)
+    *      placed before a cross-reference indicates an especially clear reference. These references should be looked up by the beginning user of this volume. As more experience is gained, all the references may be consulted.
+    ✓      placed before a cross-reference indicates a critically clear, pertinent, significant reference.
+    +      A fuller collection of references to this term are gathered at the verse so indicated.
+    +* or +✓      Additional references to this topic, or a fuller collection for this topic is given at the verse so indicated.
+    ◐      Contrast. Identifies groups of references gathered on another aspect of the topic, or identifies cross references which explain an apparent or alleged contradiction or alternate doctrinal position.
+    =      Identifies a type or antitype.
+    ⩲      Type or antitype identified on biblical authority.
+    ▶      Identifies quotations in the New Testament from the Old Testament, and at Old Testament passages the fact that they are quoted in the New Testament.
+    ▶𝒫      Identifies quotations from the Pentateuch in the prophets.
+    ✡      Identifies references which are the fulfillment of prophecy.
+    ∥      Indicates a strict parallel passage, as in the gospels, or the books of Samuel, Kings, and Chronicles. These have not been noted exhaustively, but only selectively.
+    ❅S#      placed before a Strong’s number (❅S#2313h) indicates that all the occurrences of the original Hebrew or Greek word so marked are given here.
+    ✣S#      placed before a Strong’s number (✣S#2313g) indicates that all the occurrences to the Hebrew or Greek word which are relevant or similar to the use there are given.
+    ( )      When a cross-reference in a figure-of-speech listing is placed in parentheses, this indicates that the figure is not apparent in English versions (KJV, Young’s Literal Translation, or Rotherham) and so is not cross-referenced back to the explanation of the figure at the passage so listed.
+    ( )      In a series of references to a Hebrew or Greek word identified by its Strong’s number, the English translation is given in parentheses when the word is rendered differently in a particular reference.
+    ( )      An English word in parentheses after a verse reference lets the reader know which word in that verse translates the same underlying Hebrew or Greek word.
+    ( )      A word placed in parentheses in connection with the figure of speech Ellipsis indicates the word is not present in the original language, but is to be supplied in accordance with the figure of speech as indicated.
+    CB      Companion Bible
+    F/L      In the book of Isaiah, sets of references to “first” (Is ch. 1-39) and “last” (Is ch. 40-66) portions of Isaiah are given to demonstrate the unity of the book. Words alleged by some authorities to occur in only the first portion of the book are seen to be used in the latter portion, demonstrating that the book is the work of a single author.
+    ƒ      Figures of speech are identified with a reference number, such as ƒ102, followed by the name of the figure of speech in the main entry, or a reference to where that figure is explained, and to where all the other instances of that particular figure, or a subset of that figure, can be found. This feature is an essential aid to Bible interpretation. This is the first time that such information has been made readily accessible to the ordinary Bible reader in one source. The Companion Bible identifies many of the figures of speech in its margins, and has a list with brief definitions in its Appendix 6. However, users of The Companion Bible who come across an important instance of the use of a figure of speech are not led in that volume to the other instances of its use. But to learn to identify a figure when it is used, one needs to see it in many contexts until one has developed a “feel” for the figure, and can learn its characteristics enough to be able to identify it wherever it occurs. Of course, one can consult E. W. Bullinger’s Figures of Speech Used in the Bible, but there are many instances given in the margins of The Companion Bible which are not listed or discussed in that book, and many instances given in the book not given in The Companion Bible. This edition of the Treasury remedies that, and furnishes additional references to the figures not found in either of those two excellent sources.
+          The names of the figures of speech have been alphabetized and given reference numbers from 1 to 180. Often the reference number is followed by additional letters and numbers to clearly identify the specific category of the figure of speech. The full alphabetical list of the figures with the subcategories is given in the Figure of Speech Index at the end of this volume.
+    B      B542 means a reference is made to page 542 of E. W. Bullinger’s Figures of Speech Used in the Bible. All main figure of speech entries are so keyed to this volume.
+    g or h      Indicates verbal references to the same Hebrew or Greek words when used after a cross-reference. After a Strong’s number, indicates whether the number refers to the Hebrew or Greek lexicon at the end of Strong’s Concordance.
+    Gr.      Greek
+    Heb.      Hebrew
+    ISBE      International Standard Bible Encyclopedia
+    lit.      Literally
+    mg      A reference to the marginal reading found in the center column of many editions of the King James or Authorized Version of the Bible.
+    MM      James Hope Moulton and George Milligan, The Vocabulary of the Greek Testament.
+    n      Placed after a cross reference (Ge 2:7n) means that there is a pertinent note at that reference about the subject of the reference. This new feature makes the many notes throughout the New Treasury far more accessible than in previous editions and provides a unique internal cross-referencing system for the notes.
+    or,      Italicized “or,” identifies a marginal reading supplied by the translators of the Authorized or King James Version.
+    or,      Unitalicized “or,” identifies alternate renderings supplied by this editor from Robert Young’s Literal Translation and its accompanying Concise Critical Comments, and other sources.
+    S#      There are selected references to the numbers of Strong’s Concordance throughout this edition of the Treasury, so relating information in the Treasury with other published Bible study reference tools keyed to Strong’s Concordance. Consult the Strong’s Number Index at the end of this volume.
+    T#      Topic numbers are for the first time furnished in this edition of the Treasury, together with an index to these topics, to give the New Treasury all the advantages of a topical Bible or topical arrangement of the Scriptures. Sometimes the full set of references for more than one topic is located at the same verse. To help the user rapidly identify the appropriate set of references, the topic numbers are given at each major collection of indexed topical references.
+    TDNT      Theological Dictionary of the New Testament
+    w      “with.” This symbol is used whenever cross-references are listed out of their normal biblical sequence in order to show important relationships between passages, relationships which would be lost if all the references were always cited only in the biblical order. Normally, however, references are cited in their biblical order, excepting that references are first given to verses within the same biblical book. All other references are cited in turn in biblical order. It is a sound rule of interpretation to seek first to understand the meaning of the language of an author by reference to the use of the same or similar language in the same book.
+    ‡      placed after a topic number indicates the topic provides a set of proof texts used to support a false doctrine. The importance of including selected references of this category cannot be overestimated, for this furnishes the Bible-believing Christian with a defense against false doctrines promulgated by what are sometimes known as “false cults.” Thus, by means of these symbols you can learn the commonly cited proof texts used to support a mistaken interpretation, and by reference to the cross-references not so marked, and especially by reference to cross-references marked with a ◐ symbol, the reader can learn the biblical answer to many of the false positions of the cults. Such helpful sets of cross-references are now marked out for the reader more fully in the New Treasury than in any other single reference source available.
+    ? or x      placed before a cross-reference indicates doubtful validity of the reference, for it is a wrong identification of the source of a quotation, or it is a proof text underlying a mistaken doctrinal or prophetic interpretation, or it is a questionable identification of a figure of speech—questionable because it is misidentified, or arbitrarily supports a mistaken doctrinal viewpoint.
+
+ABBREVIATIONS and order of the names of the Bible books:
+
+      Ge      Genesis           Mt      Matthew
+      Ex      Exodus            Mk      Mark
+      Le      Leviticus         Lk      Luke
+      Nu      Numbers           Jn      John
+      Dt      Deuteronomy       Ac      Acts
+      Jsh      Joshua           Ro      Romans
+      Jg      Judges            1 C      1 Corinthians
+      Ru      Ruth              2 C      2 Corinthians
+      1 S      1 Samuel         Ga      Galatians
+      2 S      2 Samuel         Ep      Ephesians
+      1 K      1 Kings          Ph       Philippians
+      2 K      2 Kings          Col      Colossians
+      1 Ch      1 Chronicles    1 Th      1 Thessalonians
+      2 Ch      2 Chronicles    2 Th      2 Thessalonians
+      Ezr      Ezra             1 T      1 Timothy
+      Ne      Nehemiah          2 T      2 Timothy
+      Est      Esther           T      Titus
+      Jb       Job              Phm      Philemon
+      Ps      Psalms            He      Hebrews
+      Pr      Proverbs          Ja      James
+      Ec      Ecclesiastes      1 P      1 Peter
+      SS      Song of Solomon   2 P      2 Peter
+      Is      Isaiah            1 J      1 John
+      Je      Jeremiah          2 J      2 John
+      La      Lamentations      3 J      3 John
+      Ezk      Ezekiel          Ju      Jude
+      Da      Daniel            Re      Revelation
+      Ho      Hosea
+      Jl      Joel
+      Am      Amos
+      Ob      Obadiah
+      Jon      Jonah
+      Mi      Micah
+      Na      Nahum
+      Hab      Habakkuk
+      Zp      Zephaniah
+      Hg      Haggai
+      Zc      Zechariah
+      Ml      Malachi
+
+Note that Obadiah, Philemon, 2 John, 3 John, and Jude each contain only one chapter. Therefore, a reference to Ob 18 is to verse 18 of that book. But a reference to Nu ch. 7, 8, 10. would mean reference to the entire contents of chapters 7, 8, and 10 of the book of Numbers. A reference to Ge 3:15 means Genesis, the third chapter, verse fifteen. When the same verse numbers are repeated (Ge 3:15, 15, 16, 17, 17), this means that the word occurs as many times in the verse as the verse number is repeated. When references are to the first, second, or third occurrence of a word in the verse, this is indicated by placing an ‘a,’ ‘b,’ or ‘c’ after the verse reference (Jn 14:2b).
+
