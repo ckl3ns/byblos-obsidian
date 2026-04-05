@@ -1,0 +1,38 @@
+---
+referencia: Dn 3
+alias:
+  - Da 3
+  - Dan 3
+  - Daniel 3
+
+livro: Daniel
+sigla: Dn
+indice_livro: 27
+capitulo: 3
+versiculo: 
+testamento: Antigo Testamento
+canon_judaico: Ketuvim
+canon_cristao: Profetas Maiores
+data_criacao: 2025-09-03
+data_atualizacao: 
+status: publicado
+tags:
+  - Bíblia
+  - AntigoTestamento
+  - ProfetasMaiores
+  - Daniel
+
+---
+
+
+[[Bíblia]] ➜ [[Antigo Testamento]] ➜ [[Ketuvim]] / [[Profetas Maiores]] ➜ [[Daniel]] 
+[[Dn 2|Voltar]] ❮ [[Dn 3]] ❯ [[Dn 4|Avançar]]
+
+## 📜 **Versículos**
+
+```dataview
+LIST  BKJ
+FROM "Bíblia/Antigo Testamento/Profetas Maiores/Daniel"
+WHERE capitulo = 3 AND versiculo > 0
+SORT versiculo ASC
+```

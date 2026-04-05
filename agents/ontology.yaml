@@ -1,0 +1,63 @@
+# ontology.yaml — Schema de entidades e relações do vault BTB
+
+entities:
+  Conceito:
+    description: Doutrina, tema ou noção teológica
+    folder: vault/wiki/conceitos/
+    required_fields: [titulo, tags, status, data_criacao]
+
+  Passagem:
+    description: Perícope ou unidade textual coerente
+    folder: vault/wiki/passagens/
+    required_fields: [titulo, referencia, livro, testamento, tags, status]
+
+  Obra:
+    description: Livro, comentário, léxico, artigo
+    folder: vault/wiki/obras/
+    required_fields: [titulo, autor, ano, tipo, nivel, raw_path]
+
+  Autor:
+    description: Teólogo, exegeta, pesquisador
+    folder: vault/wiki/autores/
+    required_fields: [nome, tradicao, periodo]
+
+  Tradicao:
+    description: Corrente ou movimento teológico
+    folder: vault/wiki/tradicoes/
+
+  Periodo:
+    description: Época histórica da teologia
+    folder: vault/wiki/periodos/
+
+  TermoOriginal:
+    description: Palavra em grego, hebraico ou aramaico
+    fields: [termo, idioma, strong, transliteracao, glosa_pt]
+
+relations:
+  # Semântica das relações
+  DEFINE:      { from: Obra,      to: Conceito    }
+  COMENTA:     { from: Obra,      to: Passagem    }
+  CONTRASTA:   { from: Conceito,  to: Conceito,   symbol: "◐" }
+  PRESSUPOE:   { from: Conceito,  to: Conceito    }
+  ESCRITO_POR: { from: Obra,      to: Autor       }
+  PERTENCE_A:  { from: Autor,     to: Tradicao    }
+  TRADUZ:      { from: TermoOriginal, to: Conceito }
+  APOIA:       { from: Tradicao,  to: [Conceito, Passagem] }
+  REFUTA:      { from: Tradicao,  to: [Conceito, Passagem] }
+
+  # Relações do grafo NTSK
+  CITA:        { from: Passagem,  to: Passagem,   symbol: "▶",  description: "Citação AT→NT" }
+  CUMPRE:      { from: Passagem,  to: Passagem,   symbol: "✡",  description: "Cumprimento profético" }
+  TIPO_DE:     { from: Passagem,  to: Passagem,   symbol: "=",  description: "Tipo/Antítipo" }
+  ANTITIPO_DE: { from: Passagem,  to: Passagem,   symbol: "⩲",  description: "Antítipo" }
+
+ntsk_symbols:
+  "*":  { name: especialmente_clara,    priority: 1 }
+  "✓":  { name: criticamente_pertinente, priority: 1 }
+  "+":  { name: colecao_completa,        priority: 2 }
+  "✡":  { name: cumpre_profecia,         priority: 1, generates_relation: CUMPRE }
+  "▶":  { name: citacao_at_nt,           priority: 1, generates_relation: CITA }
+  "◐":  { name: contraste,              priority: 2, generates_relation: CONTRASTA }
+  "=":  { name: tipo,                   priority: 1, generates_relation: TIPO_DE }
+  "⩲":  { name: antitipo,               priority: 1, generates_relation: ANTITIPO_DE }
+  "‡":  { name: doutrina_falsa,          priority: 0, warning: true }

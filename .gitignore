@@ -1,0 +1,55 @@
+# Fontes protegidas por copyright — manter apenas local
+raw/
+!raw/MANIFEST.md
+
+# Banco SQLite (rebuild via script)
+**/*.sqlite
+**/*.db
+
+# Obsidian — caches e dados locais
+vault/.obsidian/workspace.json
+vault/.obsidian/workspace-mobile.json
+vault/.obsidian/cache
+vault/.obsidian/plugins/*/data.json
+vault/.obsidian/graph.json
+vault/.obsidian/plugins/obsidian-git/
+vault/.obsidian/plugins/dataview/
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+[Tt]humbs.db
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+*.egg-info/
+dist/
+.pytest_cache/
+*.egg
+
+# PDFs e e-books (copyright)
+**/*.pdf
+**/*.epub
+**/*.mobi
+**/*.djvu
+
+# Temporários
+*.tmp
+*.bak
+*.swp
+~$*
+
+# Credenciais
+.env
+*.env
+secrets.yaml
+api_keys.*
+
+# Reports de lint — manter apenas o .gitkeep
+vault/reports/lint/*
+!vault/reports/lint/.gitkeep

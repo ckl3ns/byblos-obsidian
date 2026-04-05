@@ -1,0 +1,4 @@
+pyyaml>=6.0
+pathlib2>=2.3
+click>=8.0
+rich>=13.0

@@ -1,0 +1,39 @@
+---
+referencia: Lv 4
+alias:
+  - Le 4
+  - Lev 4
+  - Leviticus 4
+  - Levítico 4
+
+livro: Levítico
+sigla: Lv
+indice_livro: 3
+capitulo: 4
+versiculo: 
+testamento: Antigo Testamento
+canon_judaico: Torá
+canon_cristao: Pentateuco
+data_criacao: 2025-09-03
+data_atualizacao: 
+status: publicado
+tags:
+  - Bíblia
+  - AntigoTestamento
+  - Pentateuco
+  - Levítico
+
+---
+
+
+[[Bíblia]] ➜ [[Antigo Testamento]] ➜ [[Torá]] / [[Pentateuco]] ➜ [[Levítico]] 
+[[Lv 3|Voltar]] ❮ [[Lv 4]] ❯ [[Lv 5|Avançar]]
+
+## 📜 **Versículos**
+
+```dataview
+LIST  BKJ
+FROM "Bíblia/Antigo Testamento/Pentateuco/Levítico"
+WHERE capitulo = 4 AND versiculo > 0
+SORT versiculo ASC
+```
