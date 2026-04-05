@@ -186,7 +186,20 @@ class NTSKParser:
                         verses.append(p)
                 continue
             # Range expansion: '23-38' -> 16 verses
+            # BUG-001 fix: também suporta 'cap.vers-vers' (ex: '24.22-24')
             if '-' in sp:
+                # Caso 1: Padrão cap.vers-vers (ex: '24.22-24')
+                cap_range_m = re.match(r'^(\d+)\.(\d+)-(\d+)$', sp)
+                if cap_range_m:
+                    # Ignora o capítulo (grupo 1), expande os versículos (grupos 2-3)
+                    try:
+                        start_v = int(cap_range_m.group(2))
+                        end_v = int(cap_range_m.group(3))
+                        verses.extend(str(v) for v in range(start_v, end_v + 1))
+                        continue
+                    except ValueError:
+                        pass
+                # Caso 2: Padrão simples vers-vers (ex: '23-38')
                 range_m = re.match(r'^(\d+)-(\d+)$', sp)
                 if range_m:
                     try:

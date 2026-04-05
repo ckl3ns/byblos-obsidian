@@ -1,6 +1,9 @@
 """Testes para ntsk_parser.py — carryover, símbolos e normalização de IDs."""
 import sys
-sys.path.insert(0, "c:/workspace/byblos-obsidian/agents/scripts")
+import os
+# Worktree-aware: resolve path relative to this test file
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 from ntsk_parser import (
     parse_ntsk_block, NTSKParser, BOOK_MAP, NTSK_SYMBOLS,
@@ -190,6 +193,91 @@ class TestVerseRanges:
         assert ref.chapter == "1"
         assert len(ref.verses) == 3  # 3 verses separadas por vírgula
         assert ref.verses == ["1", "2", "3"]
+
+
+class TestBUG001_ChapterVerseRangeExpansion:
+    """BUG-001: Intervalos cap.vers-vers devem expandir corretamente.
+    
+    Ex: 'Lc 24.22-24' deve gerar uma ref com verses expandidos (['22', '23', '24']),
+    não uma ref com string não-expandida (['22-24']).
+    O target_id usa o primeiro versículo, mas todos os versículos estão na lista.
+    """
+
+    def test_lc_24_22_24_expande_verses(self):
+        """'Lc 24.22-24' deve expandir verses para ['22', '23', '24']."""
+        raw = "Lk 24.22-24."
+        r = parse_ntsk_block(raw, "Lc 24.21")
+        
+        # Deve gerar 1 ref com 3 versículos expandidos
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        
+        # Ref deve ser do livro Lc, capítulo 24
+        assert ref.book_vault == "Lc"
+        assert ref.chapter == "24"
+        
+        # Versículos devem estar expandidos: ['22', '23', '24']
+        assert len(ref.verses) == 3
+        assert ref.verses == ['22', '23', '24']
+        
+        # target_id usa o primeiro versículo
+        assert ref.target_id() == "Lc 24.22"
+
+    def test_mc_16_9_11_expande_verses(self):
+        """'Mc 16.9-11' deve expandir verses para ['9', '10', '11']."""
+        raw = "Mk 16.9-11."
+        r = parse_ntsk_block(raw, "Mc 16.8")
+        
+        # Deve gerar 1 ref com 3 versículos expandidos
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        
+        # Ref deve ser do livro Mc, capítulo 16
+        assert ref.book_vault == "Mc"
+        assert ref.chapter == "16"
+        
+        # Versículos devem estar expandidos: ['9', '10', '11']
+        assert len(ref.verses) == 3
+        assert ref.verses == ['9', '10', '11']
+        
+        # target_id usa o primeiro versículo
+        assert ref.target_id() == "Mc 16.9"
+
+    def test_multiplos_intervalos_cap_vers_vers(self):
+        """Múltiplos intervalos cap.vers-vers em sequência."""
+        raw = "Lk 24.22-24. Mk 16.9-11."
+        r = parse_ntsk_block(raw, "Lc 24.21")
+        
+        # Deve gerar 2 refs (uma por livro)
+        assert r["total_refs"] == 2
+        
+        # Primeira ref: Lc 24 com 3 versículos
+        lc_ref = r["refs"][0]
+        assert lc_ref.book_vault == "Lc"
+        assert lc_ref.chapter == "24"
+        assert lc_ref.verses == ['22', '23', '24']
+        
+        # Segunda ref: Mc 16 com 3 versículos
+        mc_ref = r["refs"][1]
+        assert mc_ref.book_vault == "Mc"
+        assert mc_ref.chapter == "16"
+        assert mc_ref.verses == ['9', '10', '11']
+
+    def test_intervalo_cap_vers_vers_com_simbolos(self):
+        """Intervalo cap.vers-vers com símbolos NTSK deve preservar símbolos."""
+        raw = "Lk *24.22-24."
+        r = parse_ntsk_block(raw, "Lc 24.21")
+        
+        # Deve gerar 1 ref com símbolo * e 3 versículos
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        
+        # Deve ter o símbolo * (especially_clear)
+        assert "*" in ref.symbols
+        assert "especially_clear" in ref.symbol_names
+        
+        # Versículos devem estar expandidos
+        assert ref.verses == ['22', '23', '24']
 
 
 class TestApiCompatibilidade:

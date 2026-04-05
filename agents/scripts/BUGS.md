@@ -36,6 +36,6 @@ No método `_expand_verses`, quando o input é `cap.vers-vers` (ex: `24.22-24`),
 
 ## Histórico de Bugs Corrigidos
 
-| ID | Descrição | Status | Data |
-|----|-----------|--------|------|
-| BUG-001 | "cap.vers-vers" não expande | **Pendente** | 05/04/2026 |
+| ID | Descrição | Status | Data | Commit |
+|----|-----------|--------|------|--------|
+| BUG-001 | "cap.vers-vers" não expande | **Corrigido** | 05/04/2026 | 0515d0a9 |
