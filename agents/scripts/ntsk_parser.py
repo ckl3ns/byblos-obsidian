@@ -3,44 +3,68 @@ Extrai: referências canônicas, símbolos semânticos, Strong numbers, notas in
 Suporta carryover (e.g. "Mt 1:1. 2:3. 5." -> Mt 1:1, Mt 1:2, Mt 1:5).
 Normaliza IDs para o padrão frontmatter: "Mt 1.1" (espaço, ponto).
 """
+import json
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Optional
 
-# --- Mapeamento de sigla NTSK (EN) -> sigla vault (PT-BR) ---
-# Fonte: ntsk_2_sigla.json (autoritativo)
-BOOK_MAP: dict[str, str] = {
-    # Pentateuco
-    "Ge": "Gn", "Ex": "Ex", "Le": "Lv", "Nu": "Nm", "Dt": "Dt",
-    # Históricos
-    "Jsh": "Js", "Jos": "Js", "Jg": "Jz", "Jdg": "Jz", "Ru": "Rt",
-    "1 S": "1Sm", "2 S": "2Sm",
-    "1 K": "1Rs", "2 K": "2Rs",
-    "1 Ch": "1Cr", "2 Ch": "2Cr",
-    "Ezr": "Ed", "Ne": "Ne", "Est": "Et",
-    # Poéticos
-    "Jb": "Jo", "Ps": "Sl", "Pr": "Pv", "Ec": "Ec",
-    "SS": "Ct", "Song": "Ct", "So": "Ct",
-    # Profetas Maiores
-    "Is": "Is", "Je": "Jr", "La": "Lm",
-    "Eze": "Ez", "Ezk": "Ez", "Da": "Dn",
-    # Profetas Menores
-    "Ho": "Os", "Joel": "Jl", "Joe": "Jl", "Am": "Am", "Ob": "Ob",
-    "Jon": "Jn", "Mi": "Mq", "Na": "Na", "Hab": "Hc",
-    "Zp": "Sf", "Hg": "Ag", "Zc": "Zc", "Ml": "Ml",
-    # NT
-    "Mt": "Mt", "Mk": "Mc", "Lk": "Lc", "Jn": "Jo", "Ac": "At",
-    "Ro": "Rm",
-    "1 Co": "1Co", "2 Co": "2Co",
-    "Ga": "Gl", "Ep": "Ef", "Ph": "Fp", "Col": "Cl",
-    "1 Th": "1Ts", "2 Th": "2Ts",
-    "1 T": "1Tm", "2 T": "2Tm", "T": "Tt",
-    "Phm": "Fm", "Pm": "Fm",
-    "He": "Hb", "Ja": "Tg",
-    "1 P": "1Pe", "2 P": "2Pe",
-    "1 J": "1Jo", "2 J": "2Jo", "3 J": "3Jo",
-    "Ju": "Jd", "Re": "Ap",
-}
+_ROOT_DIR = Path(__file__).resolve().parents[2]
+_NTSK_DOCS_DIR = _ROOT_DIR / "docs" / "ntsk"
+
+
+def _normalize_book_key(book: str) -> str:
+    return re.sub(r"\s+", " ", book).strip().rstrip(".")
+
+
+def _load_book_map() -> dict[str, str]:
+    """Carrega aliases de livros com saída padronizada na sigla Logos."""
+    bible_books = json.loads(
+        (_NTSK_DOCS_DIR / "bible_books.json").read_text(encoding="utf-8")
+    )
+    ntsk_to_sigla = json.loads(
+        (_NTSK_DOCS_DIR / "ntsk_2_sigla.json").read_text(encoding="utf-8")
+    )
+
+    alias_map: dict[str, str] = {}
+    abbrev_owners: dict[str, set[str]] = {}
+
+    for item in bible_books.values():
+        logos = item["logos"]
+        for alias in item.get("abreviaturas", []):
+            key = _normalize_book_key(alias)
+            if key:
+                abbrev_owners.setdefault(key, set()).add(logos)
+
+    # Prioridade 1: mapa autoritativo do NTSK -> Logos
+    for raw_book, canonical in ntsk_to_sigla.items():
+        alias_map[_normalize_book_key(raw_book)] = canonical
+
+    # Prioridade 2: sigla TSK e sigla Logos explícitas
+    for item in bible_books.values():
+        logos = item["logos"]
+        for explicit_alias in (item["tsk"], item["logos"]):
+            key = _normalize_book_key(explicit_alias)
+            alias_map.setdefault(key, logos)
+
+    # Prioridade 3: abreviações extras apenas quando forem inequívocas
+    for item in bible_books.values():
+        logos = item["logos"]
+        for alias in item.get("abreviaturas", []):
+            key = _normalize_book_key(alias)
+            if not key or key in alias_map:
+                continue
+            if len(abbrev_owners.get(key, set())) == 1:
+                alias_map[key] = logos
+
+    return alias_map
+
+
+BOOK_MAP: dict[str, str] = _load_book_map()
+_CANONICAL_BOOKS = sorted(set(BOOK_MAP.values()), key=lambda value: (-len(value), value))
+_CANONICAL_BOOK_ALT = "|".join(re.escape(book) for book in _CANONICAL_BOOKS)
+_INPUT_BOOKS = sorted(BOOK_MAP, key=lambda value: (-len(value), value))
+_INPUT_BOOK_ALT = "|".join(re.escape(book) for book in _INPUT_BOOKS)
 
 # --- Símbolos NTSK -> nome canônico e tipo de aresta ---
 NTSK_SYMBOLS: dict[str, str] = {
@@ -56,6 +80,23 @@ NTSK_SYMBOLS: dict[str, str] = {
     "\u2713": "critically_clear",
 }
 
+_SYMBOL_CHARS = "*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713"
+
+_BOOK_ALIAS_IN_REF = re.compile(
+    rf"(?<![\w])(?P<book>{_INPUT_BOOK_ALT})(?=\s*(?:[{re.escape(_SYMBOL_CHARS)}]+\s*)*\d+[:.])",
+    re.UNICODE,
+)
+
+
+def _canonicalize_reference_books(text: str) -> str:
+    """Padroniza as siglas do texto bruto para a forma canônica do projeto."""
+
+    def repl(match: re.Match[str]) -> str:
+        raw_book = _normalize_book_key(match.group("book"))
+        return BOOK_MAP.get(raw_book, match.group("book"))
+
+    return _BOOK_ALIAS_IN_REF.sub(repl, text)
+
 # --- Regex compiladas ---
 # Estrutura: [pre-syms] livro [mid-syms] cap [sep] vers_raw [post-syms]
 # Onde post-syms é todo o texto após os dígitos do versículo.
@@ -65,7 +106,7 @@ _VERS_PAT = r'(\d+(?:-\d+)*(?:\.(?=\d))?)'
 
 _REF_WITH_BOOK = re.compile(
     r'([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)'
-    r'(\d+\s+[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?|[A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)'
+    rf'({_CANONICAL_BOOK_ALT})'
     r'\s*([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)\s*'
     r'(\d+)[:\.]'
     r'\s*([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)'
@@ -74,18 +115,7 @@ _REF_WITH_BOOK = re.compile(
     re.UNICODE | re.DOTALL
 )
 
-# Livros de letra única (e.g. "S" em "1 S"):
-# O padrão [A-Z][a-z]+ exige 2+ letras. Aqui capturamos "S", "Ch", etc.
-_REF_WITH_BOOK_LETTER = re.compile(
-    r'([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)'
-    r'(\d+\s+[A-Z][a-z]*|\d+\s+[A-Z])'
-    r'\s*([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)\s*'
-    r'(\d+)[:\.]'
-    r'\s*([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)'
-    + _VERS_PAT +
-    r'(.*)',
-    re.UNICODE | re.DOTALL
-)
+_REF_WITH_BOOK_LETTER = _REF_WITH_BOOK
 
 _REF_NO_BOOK = re.compile(
     r'([*+\u25d0=\u2a72\u25b6\u2721\u2225\u2021\u2713]*)'
@@ -101,6 +131,15 @@ _STRONG_H = re.compile(r'\u2758S#(\d+h)')
 _STRONG_G = re.compile(r'\u2723S#(\d+g)')
 _INLINE_NOTE = re.compile(
     r'i\.e\.\s+[^.]+|Heb\.\s+[^.]+|or,\s+[^.]+|\([^)]+\)'
+)
+_VERSE_QUALIFIER = re.compile(r'(?<=\d)(mg|n|g|h|[abc])$', re.IGNORECASE)
+_BOOK_CHANGE_START = re.compile(
+    rf'^\.\s*({_CANONICAL_BOOK_ALT})(?=\s+\d+[:.])',
+    re.UNICODE,
+)
+_BOOK_CHANGE_AFTER_DOT = re.compile(
+    rf'\.\s+({_CANONICAL_BOOK_ALT})(?=\s+\d+[:.])',
+    re.UNICODE,
 )
 
 
@@ -123,7 +162,7 @@ class NTSKParser:
     """Parser stateful com suporte a carryover de livro/capítulo."""
 
     def __init__(self, ntsk_raw: str, source_ref: str = ""):
-        self.ntsk_raw = ntsk_raw
+        self.ntsk_raw = _canonicalize_reference_books(ntsk_raw)
         self.source_ref = source_ref
         self._curr_book_ntsk: Optional[str] = None
         self._curr_book_vault: Optional[str] = None
@@ -135,10 +174,7 @@ class NTSKParser:
         self.inline_notes: list = _INLINE_NOTE.findall(ntsk_raw)
 
     def _resolve_book(self, raw_book: str) -> Optional[str]:
-        if vault := BOOK_MAP.get(raw_book):
-            return vault
-        collapsed = re.sub(r'\s+', ' ', raw_book).strip()
-        if vault := BOOK_MAP.get(collapsed):
+        if vault := BOOK_MAP.get(_normalize_book_key(raw_book)):
             return vault
         return None
 
@@ -157,57 +193,60 @@ class NTSKParser:
         vírgula separa versículos na mesma ref (ex: '1, 2, 3' -> ['1', '2', '3']).
         """
         verses: list[str] = []
+
+        def append_token(token: str) -> None:
+            cleaned = token.strip().rstrip(').,;')
+            cleaned = _VERSE_QUALIFIER.sub('', cleaned).strip()
+            if not cleaned:
+                return
+
+            cap_range_m = re.match(r'^(\d+)\.(\d+)-(\d+)$', cleaned)
+            if cap_range_m:
+                try:
+                    start_v = int(cap_range_m.group(2))
+                    end_v = int(cap_range_m.group(3))
+                    verses.extend(str(v) for v in range(start_v, end_v + 1))
+                    return
+                except ValueError:
+                    return
+
+            range_m = re.match(r'^(\d+)-(\d+)$', cleaned)
+            if range_m:
+                try:
+                    start_v = int(range_m.group(1))
+                    end_v = int(range_m.group(2))
+                    verses.extend(str(v) for v in range(start_v, end_v + 1))
+                    return
+                except ValueError:
+                    return
+
+            if cleaned.isdigit():
+                verses.append(cleaned)
+                return
+
+            verses.append(cleaned)
+
         # Divide por '. ' (separator de refs encadeadas como "1. 2:3. 5")
         sub_parts = re.split(r'\.\s+', verses_raw)
         for sp in sub_parts:
             sp = sp.strip()
             if not sp:
                 continue
-            s_clean = sp.strip(', \t')
-            if s_clean and not s_clean[0].isdigit():
-                break
             # Strip trailing dot if present (but not decimal like "1.2")
             if sp.endswith('.') and not re.match(r'^\d+\.\d+$', sp):
                 sp = sp[:-1]
+            s_clean = sp.strip(', \t')
+            if s_clean and not s_clean[0].isdigit():
+                break
             if not sp:
                 continue
             # Carryover separator: '2:3' means verse 2 and verse 3 of the SAME chapter
-            if ':' in sp:
+            if ':' in sp and re.fullmatch(r'\d+(?:\s*:\s*\d+)+', sp):
                 for p in sp.split(':'):
-                    p = p.strip()
-                    if p.isdigit():
-                        verses.append(p)
+                    append_token(p)
                 continue
-            # Comma-separated verses: '1, 2, 3' -> ['1', '2', '3']
-            if ',' in sp:
-                for p in sp.split(','):
-                    p = p.strip()
-                    if p:
-                        verses.append(p)
-                continue
-            # Range expansion: '23-38' -> 16 verses
-            # BUG-001 fix: também suporta 'cap.vers-vers' (ex: '24.22-24')
-            if '-' in sp:
-                # Caso 1: Padrão cap.vers-vers (ex: '24.22-24')
-                cap_range_m = re.match(r'^(\d+)\.(\d+)-(\d+)$', sp)
-                if cap_range_m:
-                    # Ignora o capítulo (grupo 1), expande os versículos (grupos 2-3)
-                    try:
-                        start_v = int(cap_range_m.group(2))
-                        end_v = int(cap_range_m.group(3))
-                        verses.extend(str(v) for v in range(start_v, end_v + 1))
-                        continue
-                    except ValueError:
-                        pass
-                # Caso 2: Padrão simples vers-vers (ex: '23-38')
-                range_m = re.match(r'^(\d+)-(\d+)$', sp)
-                if range_m:
-                    try:
-                        verses.extend(str(v) for v in range(int(range_m.group(1)), int(range_m.group(2)) + 1))
-                        continue
-                    except ValueError:
-                        pass
-            verses.append(sp)
+            for token in sp.split(','):
+                append_token(token)
         return verses
 
     def _make_ref(
@@ -224,6 +263,8 @@ class NTSKParser:
         vers_raw: the raw verse number/range captured by the regex group.
         """
         book_vault = self._resolve_book(book_ntsk)
+        if not book_vault:
+            return []
         post_syms_str, verses_clean = self._extract_symbols(post_syms)
         all_syms = pre_syms + post_syms_str
         sym_chars = [c for c in NTSK_SYMBOLS if c in all_syms]
@@ -232,28 +273,28 @@ class NTSKParser:
         # então a vírgula faz parte da lista de versículos e devemos combinar.
         # Ex: "1, 2, 3" -> vers_raw='1', verses_clean=', 2, 3' -> combined='1, 2, 3'
         combined_vers = None
-        if vers_raw and vers_raw.isdigit() and verses_clean:
+        if vers_raw and verses_clean:
             # verses_clean starts with comma/digit pattern like ", 2, 3" or ",2,3"
             if re.match(r'^,\s*\d', verses_clean):
-                # Extract the comma-separated part and combine with vers_raw
-                comma_part = verses_clean[1:].strip()  # remove leading comma
-                combined_vers = vers_raw + ', ' + comma_part
+                # Mantém a string inteira para preservar ranges e possíveis chains.
+                combined_vers = vers_raw + verses_clean
                 verses_clean = ''  # signals that we used combined_vers
 
         verses_stripped = verses_clean.strip() if verses_clean else (combined_vers or "")
 
         # Chain detection: verses_clean com leading '. ' indica carryover
         # Ex: ". 2:3. 5" -> split -> ["2:3", "5"], cria uma ref por parte
-        is_chain = (
-            verses_stripped and
-            verses_stripped not in ('.',) and
-            verses_clean.startswith('. ')
+        chain_source = None
+        if verses_clean.startswith('. '):
+            chain_source = vers_raw + verses_clean
+        elif combined_vers and re.search(r'\.\s+\d', combined_vers):
+            chain_source = combined_vers
+        is_chain = bool(
+            chain_source and
+            chain_source.strip() not in ('.',)
         )
         if is_chain:
-            # Chain: verses_clean = ". 2:3. 5" (starts with '. '), use directly
-            # Prepend vers_raw (the first verse) to get full chain
-            chain_str = vers_raw + verses_clean
-            parts = re.split(r'\.\s+', chain_str)
+            parts = re.split(r'\.\s+', chain_source)
             results: list[NTSKRef] = []
             carried_chapter = chapter
             carried_book_ntsk = book_ntsk
@@ -267,15 +308,7 @@ class NTSKParser:
                     part = part[:-1].strip()
                 if not part:
                     continue
-                # Check if part is a book-change pattern: "Lk 1:1" or "1 Co 1"
-                part_space = part.split(' ')
-                new_book_ntsk = ""
-                if len(part_space) >= 2 and self._resolve_book(part_space[0] + " " + part_space[1]):
-                    new_book_ntsk = part_space[0] + " " + part_space[1]
-                elif len(part_space) >= 1 and self._resolve_book(part_space[0]):
-                    new_book_ntsk = part_space[0]
-
-                if new_book_ntsk:
+                if _REF_WITH_BOOK.match(part):
                     # Book-change detected — STOP chain processing.
                     # The outer parse loop will restart from this book-change position!
                     break
@@ -302,15 +335,16 @@ class NTSKParser:
                         part_verses = self._expand_verses(second_num_str) if second_num_str else [str(first_num)]
                     else:
                         # Verse carryover: "2:3" -> SPLIT into separate refs for each verse
-                        for v in part.split(':'):
-                            v = v.strip()
-                            if v.isdigit():
-                                results.append(NTSKRef(
-                                    raw=raw, book_abbr=carried_book_ntsk, book_vault=carried_book_vault,
-                                    chapter=carried_chapter, verses=[v],
-                                    symbols=sym_chars,
-                                    symbol_names=[NTSK_SYMBOLS[s] for s in sym_chars],
-                                ))
+                        carry_verses = [str(first_num)]
+                        if second_num_str:
+                            carry_verses.extend(self._expand_verses(second_num_str))
+                        for v in carry_verses:
+                            results.append(NTSKRef(
+                                raw=raw, book_abbr=carried_book_ntsk, book_vault=carried_book_vault,
+                                chapter=carried_chapter, verses=[v],
+                                symbols=sym_chars,
+                                symbol_names=[NTSK_SYMBOLS[s] for s in sym_chars],
+                            ))
                         continue
                 else:
                     # No ':' -> just verses (possibly range or comma-separated)
@@ -329,8 +363,7 @@ class NTSKParser:
         # verses_stripped starting with '.' followed by LETTER is a book-change pattern
         # e.g. ". Lk 1:1." -> verses_stripped = ". Lk 1:1." (dot preserved by strip)
         # We detect this by checking if verses_stripped matches ". LETTER"
-        import re as _re
-        book_change_pattern = _re.match(r'\.\s*[A-Za-z]', verses_stripped)
+        book_change_pattern = _BOOK_CHANGE_START.match(verses_stripped)
         if book_change_pattern:
             # ". Lk 1:1." pattern — this is a book-change, not verses.
             # Return just the first ref (vers_raw) and signal parse loop to restart.
@@ -343,6 +376,8 @@ class NTSKParser:
             )]
         if verses_stripped and verses_stripped not in ('.',):
             verses = self._expand_verses(verses_stripped)
+            if not verses and vers_raw:
+                verses = self._expand_verses(vers_raw)
         elif verses_raw.strip():
             verses = self._expand_verses(verses_raw.strip())
         elif vers_raw:
@@ -405,17 +440,10 @@ class NTSKParser:
                 self.refs.extend(refs)
                 # Check if post_syms has a book-change pattern (. LETTER)
                 # If so, find the book position and continue from there
-                import re as _re
-                book_m = _re.search(r'\.\s+([A-Za-z])', post_syms)
+                book_m = _BOOK_CHANGE_AFTER_DOT.search(post_syms)
                 if book_m:
-                    # book_m matches ". L" where . is separator and L is first letter of book
-                    # book_m.group(0) = ". L" (separator . + letter)
-                    # The letter starts AFTER the separator in post_syms
-                    # Separator length = len(book_m.group(0)) - 1 (the letter is not part of separator)
-                    # = 3 - 1 = 2 for ". L", = 1 for ".L"
                     post_syms_start = m.end() - len(post_syms)
-                    sep_len = len(book_m.group(0)) - 1
-                    book_abs_pos = post_syms_start + book_m.start() + sep_len
+                    book_abs_pos = post_syms_start + book_m.start(1)
                     i = book_abs_pos
                 else:
                     i = m.end()

@@ -159,6 +159,18 @@ class TestBookMapping:
         r = parse_ntsk_block("XYZ 1:1.", "Gn 1.1")
         assert r["total_refs"] == 0  # Unknown books produce no refs
 
+    def test_exodo_usa_sigla_logos_com_acento(self):
+        """'Ex' deve ser normalizado para a sigla Logos 'Êx'."""
+        raw = "Ex 3:2."
+        r = parse_ntsk_block(raw, "Êx 3.1")
+        assert r["refs"][0].book_vault == "Êx"
+
+    def test_jo_normaliza_para_livro_de_jo(self):
+        """'Jb' deve ser normalizado para a sigla Logos 'Jó'."""
+        raw = "Jb 1:1."
+        r = parse_ntsk_block(raw, "Jó 1.1")
+        assert r["refs"][0].book_vault == "Jó"
+
 
 class TestVerseRanges:
     """Intervalos de versículos são expandidos em versículos individuais."""
@@ -193,6 +205,66 @@ class TestVerseRanges:
         assert ref.chapter == "1"
         assert len(ref.verses) == 3  # 3 verses separadas por vírgula
         assert ref.verses == ["1", "2", "3"]
+
+    def test_range_misto_com_virgula_e_hifen_expande_tudo(self):
+        """Casos reais de unresolved precisam expandir listas com ranges mistos."""
+        raw = "Le 7:24, 26, 30-34."
+        r = parse_ntsk_block(raw, "Lv 9.21")
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        assert ref.book_vault == "Lv"
+        assert ref.chapter == "7"
+        assert ref.verses == ["24", "26", "30", "31", "32", "33", "34"]
+
+    def test_range_misto_mantem_range_inicial_e_final(self):
+        """'Le 7:11-21, 29-34' deve expandir os dois ranges no mesmo capitulo."""
+        raw = "Le 7:11-21, 29-34."
+        r = parse_ntsk_block(raw, "Lv 3.1")
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        assert ref.book_vault == "Lv"
+        assert ref.chapter == "7"
+        assert ref.verses == [
+            "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21",
+            "29", "30", "31", "32", "33", "34",
+        ]
+
+
+class TestReferenceQualifiers:
+    """Qualificadores NTSK nao invalidam a referencia biblica."""
+
+    def test_mg_qualifier_preserva_versiculo(self):
+        """'mg' indica marginal reading; a referencia continua valida."""
+        raw = "Jb 24:24mg."
+        r = parse_ntsk_block(raw, "Jó 8.22")
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        assert ref.book_vault == "Jó"
+        assert ref.chapter == "24"
+        assert ref.verses == ["24"]
+        assert ref.target_id() == "Jó 24.24"
+
+    def test_n_qualifier_preserva_versiculo(self):
+        """'n' indica nota pertinente; nao deve quebrar o parse."""
+        raw = "Ge 2:7n."
+        r = parse_ntsk_block(raw, "Gn 2.1")
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        assert ref.book_vault == "Gn"
+        assert ref.chapter == "2"
+        assert ref.verses == ["7"]
+        assert ref.target_id() == "Gn 2.7"
+
+    def test_occurrence_suffix_preserva_versiculo(self):
+        """Sufixos a/b/c indicam ocorrencia no verso, nao verso invalido."""
+        raw = "Jn 14:2b."
+        r = parse_ntsk_block(raw, "Jo 14.1")
+        assert r["total_refs"] == 1
+        ref = r["refs"][0]
+        assert ref.book_vault == "Jo"
+        assert ref.chapter == "14"
+        assert ref.verses == ["2"]
+        assert ref.target_id() == "Jo 14.2"
 
 
 class TestBUG001_ChapterVerseRangeExpansion:
@@ -278,6 +350,33 @@ class TestBUG001_ChapterVerseRangeExpansion:
         
         # Versículos devem estar expandidos
         assert ref.verses == ['22', '23', '24']
+
+
+class TestUnresolvedTargetRegressions:
+    """Casos reais observados em graph_stats.json devem continuar cobertos."""
+
+    def test_carryover_de_capitulos_nao_colapsa_no_capitulo_7(self):
+        """'Le 7:37, 38. 11:46...' deve gerar mudancas reais de capitulo."""
+        raw = "Le 7:37, 38. 11:46. 13:59. 14:54-57. 15:32, 33. 27:34."
+        r = parse_ntsk_block(raw, "Nm 36.13")
+
+        assert r["total_refs"] == 6
+        refs = r["refs"]
+        assert [(ref.chapter, ref.verses) for ref in refs] == [
+            ("7", ["37", "38"]),
+            ("11", ["46"]),
+            ("13", ["59"]),
+            ("14", ["54", "55", "56", "57"]),
+            ("15", ["32", "33"]),
+            ("27", ["34"]),
+        ]
+
+    def test_casos_reais_de_unresolved_nao_geram_targets_invalidos(self):
+        """Refs reais que hoje escapam devem virar IDs validos apos o parse."""
+        raw = "Jb 8:22. 14:10, 12. 24:24mg."
+        r = parse_ntsk_block(raw, "Jó 27.19")
+        ids = [ref.target_id() for ref in r["refs"]]
+        assert ids == ["Jó 8.22", "Jó 14.10", "Jó 24.24"]
 
 
 class TestApiCompatibilidade:
