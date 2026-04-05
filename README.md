@@ -78,12 +78,12 @@ byblos-obsidian/
 │   └── output/             ← Saídas de graph_builder.py
 ├── raw/                    ← Fontes primárias (local only, não versionado)
 │   └── dicionarios-enciclopedias/
-│       ├── IVP-Black/      ← DJG2, DPL2, DLNT, DNT-B, DOT-*
+│       ├── IVP-Black/      ← DJG1/2, DPL1/2, DLNT, DNT-B, DOT-*
 │       ├── AYBD/           ← Anchor Yale Bible Dictionary
 │       ├── NIDB/           ← New Interpreter's Dict. of the Bible
-│       ├── teologicos/     ← EDT, DTIB, DBI-R
-│       ├── EAC/            ← Encyclopedia of Ancient Christianity
-│       └── especiais/      ← DDD, outros
+│       ├── EDT/            ← Evangelical Dictionary of Theology
+│       ├── *.txt           ← DTIB, DDD, EAC, DBI-R
+│       └── tmp/            ← agregados/staging, não canônico
 ├── docs/                   ← Documentação do projeto
 │   └── convencoes.md       ← Siglas e símbolos NTSK
 ├── CLAUDE.md               ← Instruções para agentes LLM
@@ -280,7 +280,7 @@ Domínios disponíveis:
 ## Próximos Passos Recomendados
 
 1. **Calibração**: rodar enriquecimento completo em `Jo-1.1.md` (versículo rico, teologicamente denso)
-2. **Indexar fontes**: criar fichas em `vault/wiki/obras/` para cada diretório em `raw/`
+2. **Indexar fontes**: criar fichas em `vault/wiki/obras/` para cada obra canônica em `raw/dicionarios-enciclopedias/`
 3. **Primeiro lint**: estabelecer baseline com `agents/scripts/lint_checker.py` (quando criado)
 4. **Expandir grafo**: identificar pares AT→NT com símbolo `▶` e criar artigos de conceito
 5. **Congelar ontologia**: não alterar `agents/ontology.yaml` sem justificativa documentada

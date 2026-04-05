@@ -19,7 +19,7 @@ data_atualizacao:
 
 → [[vault/wiki/conceitos/|Conceitos]] · [[vault/wiki/passagens/|Passagens]] · [[vault/wiki/autores/|Autores]] · [[vault/wiki/obras/|Obras]]
 
-*Nenhum artigo publicado ainda.*
+*17 fichas de obras publicadas em [[vault/wiki/obras/|Obras]].*
 
 ## Knowledge (hipóteses e regras)
 
@@ -38,7 +38,7 @@ data_atualizacao:
 | Métrica | Valor |
 |---|---|
 | Versículos com enriquecimento | 0 / 31.102 |
-| Artigos wiki publicados | 0 |
+| Artigos wiki publicados | 17 |
 | Links NTSK convertidos | pendente |
 | Hipóteses ativas | 0 |
 | Regras ativas | 0 |

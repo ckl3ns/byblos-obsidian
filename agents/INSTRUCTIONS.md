@@ -227,7 +227,8 @@ editora: Yale University Press
 ano: 1992
 volumes: 6
 dominio: [AT, NT, arqueologia, história]
-caminho_raw: raw/AYBD/
+path_raw: raw/dicionarios-enciclopedias/AYBD/
+caminho_raw: raw/dicionarios-enciclopedias/AYBD/
 ---
 
 # {Sigla} — {Título Completo}

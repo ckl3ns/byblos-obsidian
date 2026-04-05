@@ -3,38 +3,139 @@ Full-text search sobre obras de referência em raw/.
 Retorna trechos com localização exata para citação com proveniência.
 
 Uso básico:
-    searcher = RawSearcher("vault/raw")
+    searcher = RawSearcher("raw")
     hits = searcher.search("δοῦλος prisoner Paul", siglas=["DPL2", "DLNT"])
     for h in hits:
         print(h.citation_tag)
-        # → [Fonte: raw/IVP-Black/DPL2.txt | Obra: DPL2 | Nível: 3]
+        # → [Fonte: raw/dicionarios-enciclopedias/... | Obra: DPL2 | Nível: 3]
 """
 import re
-import json
 from pathlib import Path
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Optional
 
 
-# Mapa sigla → (path relativo, nível de autoridade)
+# Mapa sigla → (path relativo a raw/, nível de autoridade)
 OBRA_MAP = {
-    "AYBD":   ("AYBD",        3),
-    "DJG2":   ("IVP-Black",   3),
-    "DPL2":   ("IVP-Black",   3),
-    "DLNT":   ("IVP-Black",   3),
-    "DNT-B":  ("IVP-Black",   3),
-    "DOT-P":  ("IVP-Black",   3),
-    "DOT-Pr": ("IVP-Black",   3),
-    "DOT-W":  ("IVP-Black",   3),
-    "NIDB":   ("NIDB",        3),
-    "DDD":    ("especiais",   3),
-    "EDT":    ("teologicos",  4),
-    "EAC":    ("EAC",         3),
-    "DTIB":   ("especiais",   4),
-    "DBI-R":  ("especiais",   4),
+    "AYBD": {
+        "path": "dicionarios-enciclopedias/AYBD",
+        "nivel": 3,
+    },
+    "DJG1": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Joel B. Green & Scot McKnight (eds.) - Dictionary of Jesus and the Gospels, 1st ed. (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DJG2": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Joel B. Green & Jeannine K. Brown & Nicholas Perrin (eds.) - "
+            "Dictionary of Jesus and the Gospels, 2nd ed. (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DPL1": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Gerald F. Hawthorne & Ralph P. Martin (eds.) - Dictionary of Paul and His Letters, 1st ed. (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DPL2": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Scot McKnight (eds.) - Dictionary of Paul and His Letters - "
+            "A Compendium of Contemporary Biblical Scholarship, 2nd ed. (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DLNT": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Ralph P. Martin & Peter H. Davids (eds.) - Dictionary of the "
+            "Later New Testament & Its Developments (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DNT-B": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Craig A. Evans & Stanley E. Porter (eds.) - Dictionary of New "
+            "Testament Background (IVP DNT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DOT-H": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Bill T. Arnold & H. G. M. Williamson (eds.) - Dictionary of the "
+            "Old Testament - Historical Books (IVP DOT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DOT-P": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "T. Desmond Alexander & David W. Baker (eds.) - Dictionary of the "
+            "Old Testament - Pentateuch (IVP DOT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DOT-Pr": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Mark J. Boda & J. Gordon McConville (eds.) - Dictionary of the "
+            "Old Testament - Prophets (IVP DOT).txt"
+        ),
+        "nivel": 3,
+    },
+    "DOT-W": {
+        "path": (
+            "dicionarios-enciclopedias/IVP-Black/"
+            "Tremper Longman III & Peter Enns (eds.) - Dictionary of the Old "
+            "Testament - Wisdom, Poetry & Writings (IVP DOT).txt"
+        ),
+        "nivel": 3,
+    },
+    "NIDB": {
+        "path": "dicionarios-enciclopedias/NIDB",
+        "nivel": 3,
+    },
+    "DDD": {
+        "path": "dicionarios-enciclopedias/Dictionary of Deities and Demons in the Bible.txt",
+        "nivel": 3,
+    },
+    "EDT": {
+        "path": "dicionarios-enciclopedias/EDT",
+        "nivel": 4,
+    },
+    "EAC": {
+        "path": "dicionarios-enciclopedias/Encyclopedia of Ancient Christianity.txt",
+        "nivel": 3,
+    },
+    "DTIB": {
+        "path": "dicionarios-enciclopedias/Dictionary for Theological Interpretation of the Bible.txt",
+        "nivel": 4,
+    },
+    "DBI-R": {
+        "path": (
+            "dicionarios-enciclopedias/"
+            "Leland Ryken & James C. Wilhoit & Tremper Longman - Dictionary of Biblical Imagery.txt"
+        ),
+        "nivel": 4,
+    },
 }
 
 CONTEXT_LINES = 8   # linhas de contexto em torno do hit
+
+
+@dataclass
+class LoadedRawFile:
+    obra_path: str
+    file_name: str
+    lines: list[str]
 
 
 @dataclass
@@ -63,29 +164,50 @@ class SearchHit:
 
 class RawSearcher:
     def __init__(self, raw_dir: str | Path):
-        self.raw_dir = Path(raw_dir)
-        self._index: dict[str, list[str]] = {}   # sigla → linhas do arquivo
+        requested = Path(raw_dir)
+        self.raw_root = self._normalize_raw_root(requested)
+        self._index: dict[str, list[LoadedRawFile]] = {}
 
-    def _load(self, sigla: str) -> list[str]:
+    def _normalize_raw_root(self, requested: Path) -> Path:
+        """Aceita tanto raw/ quanto raw/dicionarios-enciclopedias/."""
+        if requested.name == "dicionarios-enciclopedias":
+            return requested.parent
+        return requested
+
+    def _entry(self, sigla: str) -> dict:
+        if sigla not in OBRA_MAP:
+            raise ValueError(f"Sigla '{sigla}' não cadastrada em OBRA_MAP.")
+        return OBRA_MAP[sigla]
+
+    def _resolve_candidates(self, sigla: str) -> list[Path]:
+        entry = self._entry(sigla)
+        target = self.raw_root / entry["path"]
+
+        if target.is_file():
+            return [target]
+        if target.is_dir():
+            return sorted(target.glob("*.txt"))
+
+        raise FileNotFoundError(
+            f"Nenhum arquivo encontrado para {sigla} em raw/{entry['path']}"
+        )
+
+    def _load(self, sigla: str) -> list[LoadedRawFile]:
         if sigla in self._index:
             return self._index[sigla]
 
-        if sigla not in OBRA_MAP:
-            raise ValueError(f"Sigla '{sigla}' não cadastrada em OBRA_MAP.")
+        loaded: list[LoadedRawFile] = []
+        for candidate in self._resolve_candidates(sigla):
+            obra_path = str(candidate.parent.relative_to(self.raw_root)).replace("\\", "/")
+            lines = candidate.read_text(encoding='utf-8', errors='replace').splitlines()
+            loaded.append(LoadedRawFile(
+                obra_path=obra_path,
+                file_name=candidate.name,
+                lines=lines,
+            ))
 
-        folder, _ = OBRA_MAP[sigla]
-        candidates = list((self.raw_dir / folder).glob(f"*{sigla}*"))
-        if not candidates:
-            candidates = list((self.raw_dir / folder).glob("*.txt"))
-        if not candidates:
-            raise FileNotFoundError(
-                f"Nenhum arquivo encontrado para {sigla} em raw/{folder}/"
-            )
-
-        # Carrega o primeiro candidato (em produção, indexar todos)
-        lines = candidates[0].read_text(encoding='utf-8', errors='replace').splitlines()
-        self._index[sigla] = lines
-        return lines
+        self._index[sigla] = loaded
+        return loaded
 
     def search(
         self,
@@ -104,38 +226,36 @@ class RawSearcher:
 
         for sigla in targets:
             try:
-                lines = self._load(sigla)
-            except (ValueError, FileNotFoundError) as e:
+                raw_files = self._load(sigla)
+            except (ValueError, FileNotFoundError):
                 continue
 
-            folder, nivel = OBRA_MAP[sigla]
-            fname = Path(self._index.get(f"_path_{sigla}", sigla + ".txt")).name
+            nivel = self._entry(sigla)["nivel"]
 
-            for i, line in enumerate(lines):
-                line_lower = line.lower()
-                matched = [t for t in terms if t in line_lower]
-                if len(matched) < min_score:
-                    continue
+            for raw_file in raw_files:
+                for i, line in enumerate(raw_file.lines):
+                    line_lower = line.lower()
+                    matched = [t for t in terms if t in line_lower]
+                    if len(matched) < min_score:
+                        continue
 
-                # contexto: N linhas antes e depois
-                start = max(0, i - CONTEXT_LINES // 2)
-                end   = min(len(lines), i + CONTEXT_LINES // 2 + 1)
-                context = "\n".join(lines[start:end])
+                    start = max(0, i - CONTEXT_LINES // 2)
+                    end = min(len(raw_file.lines), i + CONTEXT_LINES // 2 + 1)
+                    context = "\n".join(raw_file.lines[start:end])
 
-                all_hits.append(SearchHit(
-                    sigla=sigla,
-                    obra_path=folder,
-                    file_name=fname,
-                    line_number=i + 1,
-                    line_offset=sum(len(l)+1 for l in lines[:i]),
-                    matched_terms=matched,
-                    context=context,
-                    score=len(matched),
-                    nivel=nivel,
-                ))
+                    all_hits.append(SearchHit(
+                        sigla=sigla,
+                        obra_path=raw_file.obra_path,
+                        file_name=raw_file.file_name,
+                        line_number=i + 1,
+                        line_offset=sum(len(l) + 1 for l in raw_file.lines[:i]),
+                        matched_terms=matched,
+                        context=context,
+                        score=len(matched),
+                        nivel=nivel,
+                    ))
 
-        # Ordenar por score desc, depois por linha asc
-        all_hits.sort(key=lambda h: (-h.score, h.line_number))
+        all_hits.sort(key=lambda h: (-h.score, h.file_name, h.line_number))
         return all_hits[:max_hits]
 
     def search_entry(
@@ -153,43 +273,50 @@ class RawSearcher:
             re.IGNORECASE | re.MULTILINE
         )
         targets = siglas if siglas else list(OBRA_MAP.keys())
-        all_hits = []
+        all_hits: list[SearchHit] = []
 
         for sigla in targets:
             try:
-                lines = self._load(sigla)
+                raw_files = self._load(sigla)
             except Exception:
                 continue
 
-            folder, nivel = OBRA_MAP[sigla]
-            full_text = "\n".join(lines)
+            nivel = self._entry(sigla)["nivel"]
 
-            for m in pattern.finditer(full_text):
-                line_num = full_text[:m.start()].count('\n') + 1
-                start = max(0, line_num - 2)
-                end   = min(len(lines), line_num + CONTEXT_LINES)
-                context = "\n".join(lines[start:end])
-                fname = sigla + ".txt"
+            for raw_file in raw_files:
+                full_text = "\n".join(raw_file.lines)
+                for match in pattern.finditer(full_text):
+                    line_num = full_text[:match.start()].count('\n') + 1
+                    start = max(0, line_num - 2)
+                    end = min(len(raw_file.lines), line_num + CONTEXT_LINES)
+                    context = "\n".join(raw_file.lines[start:end])
 
-                all_hits.append(SearchHit(
-                    sigla=sigla,
-                    obra_path=folder,
-                    file_name=fname,
-                    line_number=line_num,
-                    line_offset=m.start(),
-                    matched_terms=[entry_term],
-                    context=context,
-                    score=2,   # verbetes têm score fixo maior
-                    nivel=nivel,
-                ))
-                if len(all_hits) >= max_hits:
-                    break
+                    all_hits.append(SearchHit(
+                        sigla=sigla,
+                        obra_path=raw_file.obra_path,
+                        file_name=raw_file.file_name,
+                        line_number=line_num,
+                        line_offset=match.start(),
+                        matched_terms=[entry_term],
+                        context=context,
+                        score=2,
+                        nivel=nivel,
+                    ))
+                    if len(all_hits) >= max_hits:
+                        return all_hits[:max_hits]
 
         return all_hits[:max_hits]
 
     def get_citation(self, sigla: str, line_number: int) -> str:
-        """Gera tag de citação para uma linha específica."""
+        """Gera tag de citação para uma sigla; line_number é mantido por compatibilidade."""
+        del line_number
         if sigla not in OBRA_MAP:
             return f"[Fonte: raw/DESCONHECIDO/{sigla} | Obra: {sigla} | Nível: 5]"
-        folder, nivel = OBRA_MAP[sigla]
-        return f"[Fonte: raw/{folder}/{sigla}.txt | Obra: {sigla} | Nível: {nivel}]"
+
+        entry = self._entry(sigla)
+        cited_path = entry["path"].replace("\\", "/")
+        target = self.raw_root / entry["path"]
+        if target.is_dir() and not cited_path.endswith("/"):
+            cited_path += "/"
+
+        return f"[Fonte: raw/{cited_path} | Obra: {sigla} | Nível: {entry['nivel']}]"

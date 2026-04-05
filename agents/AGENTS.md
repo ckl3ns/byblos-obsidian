@@ -12,12 +12,13 @@ vault/
 │   ├── {Sigla}-{cap}.md           # índice do capítulo
 │   └── {Sigla}-{cap}.{vs}.md     # nó do versículo
 ├── raw/                           # obras de referência (NÃO editar)
-│   ├── AYBD/
-│   ├── IVP-Black/
-│   ├── NIDB/
-│   ├── teologicos/                # EDT
-│   ├── EAC/
-│   └── especiais/                 # DDD, DTIB, DBI-R
+│   └── dicionarios-enciclopedias/
+│       ├── AYBD/
+│       ├── EDT/
+│       ├── IVP-Black/
+│       ├── NIDB/
+│       ├── *.txt                  # DDD, DTIB, EAC, DBI-R
+│       └── tmp/                   # staging / agregados, não canônico
 ├── wiki/
 │   ├── conceitos/
 │   ├── pessoas/
@@ -149,14 +150,17 @@ Subdiretórios criados conforme a necessidade. Domínios implementados:
 | Sigla | Obra | Corpus | Nível |
 |-------|------|--------|-------|
 | AYBD | Anchor Yale Bible Dictionary (6 vols.) | AT + NT | 3 |
+| DJG1 | Dictionary of Jesus and the Gospels, 1ª ed. | Evangelhos | 3 |
 | DJG2 | Dictionary of Jesus and the Gospels, 2ª ed. | Evangelhos | 3 |
+| DPL1 | Dictionary of Paul and His Letters, 1ª ed. | Paulinas | 3 |
 | DPL2 | Dictionary of Paul and His Letters, 2ª ed. | Paulinas | 3 |
 | DLNT | Dictionary of Later NT & Its Developments | Hb, Ep. Gerais, Ap | 3 |
 | DNT-B | Dictionary of NT Background | Contexto NT | 3 |
+| DOT-H | Dictionary of OT Historical Books | Js–Et | 3 |
 | DOT-P | Dictionary of OT Pentateuch | Gn–Dt | 3 |
 | DOT-Pr | Dictionary of OT Prophets | Profetas | 3 |
 | DOT-W | Dictionary of OT Wisdom, Poetry & Writings | Jó, Sl, Pv, Ec, Ct | 3 |
-| NIDB | New Interpreter's Dict. of the Bible (H-Z) | AT + NT | 3 |
+| NIDB | New Interpreter's Dict. of the Bible (A-Z) | AT + NT | 3 |
 | DDD | Dictionary of Deities and Demons in the Bible | AT semítico | 3 |
 
 ### Teologia, Hermenêutica, Patrística
@@ -169,7 +173,7 @@ Subdiretórios criados conforme a necessidade. Domínios implementados:
 | DBI-R | Dictionary of Biblical Imagery (Ryken) | Literatura/imagem | 4 |
 
 ### Descartadas (agents/archive/)
-ISBE-R, ZEB, DJG1, DPL1, DOT-H, EC, EDCSWR, DCS, NDT, GDT
+ISBE-R, ZEB, EC, EDCSWR, DCS, NDT, GDT
 
 ---
 

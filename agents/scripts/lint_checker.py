@@ -131,7 +131,10 @@ def _build_file_index(vault_dir: Path) -> set[str]:
         fm = _parse_fm(md.read_text(encoding='utf-8', errors='replace'))
         if ref := fm.get('referencia'):
             index.add(str(ref).lower())
-        for alias in (fm.get('alias') or []):
+        aliases = fm.get('aliases') or fm.get('alias') or []
+        if isinstance(aliases, str):
+            aliases = [aliases]
+        for alias in aliases:
             index.add(str(alias).lower())
     return index
 
@@ -144,6 +147,10 @@ def run_lint(vault_dir: str | Path, output_dir: Optional[str | Path] = None) -> 
     biblia_dir = vault / 'Bíblia'
     wiki_dir   = vault / 'wiki'
     raw_dir    = vault / 'raw'
+    repo_root  = vault
+    if not raw_dir.exists() and (vault.parent / 'raw').exists():
+        raw_dir = vault.parent / 'raw'
+        repo_root = vault.parent
 
     versiculo_count = 0
     enriched_count  = 0
@@ -250,9 +257,9 @@ def run_lint(vault_dir: str | Path, output_dir: Optional[str | Path] = None) -> 
 
         # ── Regra 7: wiki/obras/ com path_raw inexistente ─────────────
         if ('wiki/obras' in rel or 'wiki\\obras' in rel) and raw_dir.exists():
-            path_raw = fm.get('path_raw', '')
+            path_raw = fm.get('path_raw') or fm.get('caminho_raw') or ''
             if path_raw:
-                target_path = vault / path_raw
+                target_path = repo_root / path_raw
                 if not target_path.exists():
                     report.issues.append(LintIssue(
                         severity='MENOR', file=short, rule='PATH_RAW_INVALIDO',

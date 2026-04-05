@@ -14,7 +14,7 @@ entities:
   Obra:
     description: Livro, comentário, léxico, artigo
     folder: vault/wiki/obras/
-    required_fields: [titulo, autor, ano, tipo, nivel, raw_path]
+    required_fields: [titulo, sigla, tipo, nivel_autoridade, path_raw]
 
   Autor:
     description: Teólogo, exegeta, pesquisador
