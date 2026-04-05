@@ -1,7 +1,9 @@
-# Vault Bíblico-Teológico
+# byblos-obsidian
 
-Base de conhecimento exegético-teológica construída e mantida em Obsidian,
-operada por agentes LLM segundo contrato definido em `agents/AGENTS.md`.
+> Vault de estudos bíblicos e teológicos com grafo de 31.000+ versículos,
+> infraestrutura de agentes LLM e sistema de gestão de conhecimento.
+
+**byblos** (βύβλος) — papiro, livro; origem etimológica de "Bíblia".
 
 ---
 
@@ -11,63 +13,115 @@ O vault separa três camadas com regras diferentes:
 
 | Camada | Path | Quem escreve | Quem lê |
 |--------|------|--------------|---------|
-| **Texto bíblico** | `Bíblia/` | Ninguém (gerado uma vez) | Todos |
-| **Conhecimento compilado** | `wiki/` | Agentes (com proveniência) | Todos |
+| **Texto bíblico** | `vault/Bíblia/` | Ninguém (gerado uma vez) | Todos |
+| **Conhecimento compilado** | `vault/wiki/` | Agentes (com proveniência) | Todos |
 | **Fontes primárias** | `raw/` | Humano (cópia manual) | Agentes |
-| **Outputs** | `reports/` | Agentes | Humano |
+| **Outputs** | `vault/reports/` | Agentes | Humano |
 
-Nenhum agente modifica `Bíblia/`. Nenhuma afirmação factual vai para `wiki/`
+Nenhum agente modifica `vault/Bíblia/`. Nenhuma afirmação factual vai para `vault/wiki/`
 sem uma tag `[Fonte: raw/... | Obra: ... | Nível: N]`. Inferências ficam isoladas
 em seções "Lacunas Identificadas".
 
 ---
 
-## Estrutura de Diretórios
+## Estrutura do Projeto
 
 ```
-vault/
-├── Bíblia/                     ← SOMENTE LEITURA
-│   ├── Antigo Testamento/
-│   │   ├── Pentateuco/
-│   │   ├── Poéticos e Sapienciais/
-│   │   ├── Profetas Maiores/
-│   │   └── Profetas Menores/
-│   └── Novo Testamento/
-│       ├── Evangelhos/
-│       │   └── Mateus/         — Mt-1.md … Mt-1.1.md … Mt-1.25.md …
-│       ├── Epístolas Paulinas/
-│       │   └── Filemón/        — Filemon.md, Fm-1.md, Fm-1.1.md … Fm-1.25.md
-│       └── (demais livros)
-│
-├── wiki/
-│   ├── conceitos/              — artigos de conceitos teológicos
-│   ├── tópicos/                — artigos de temas exegéticos
-│   ├── pericopes/              — análises de perícopes
-│   └── obras/                  — fichas das fontes em raw/
-│
-├── raw/
-│   ├── IVP-Black/              — DJG2, DPL2, DLNT, DNT-B, DOT-*
-│   ├── AYBD/                   — Anchor Yale Bible Dictionary
-│   ├── NIDB/                   — New Interpreter's Dict. of the Bible
-│   ├── teologicos/             — EDT, DTIB, DBI-R
-│   ├── EAC/                    — Estudos Avançados Complementares
-│   └── especiais/              — DDD, outros
-│
-├── reports/
-│   ├── lint/                   — relatórios semanais (YYYY-MM-DD.md)
-│   ├── qa/                     — respostas Q&A
-│   └── exegese/                — relatórios exegéticos longos
-│
+byblos-obsidian/
+├── vault/              ← Vault Obsidian (abrir aqui no Obsidian)
+│   ├── Bíblia/         ← Grafo bíblico: 31.102 nós de versículo
+│   │   ├── Antigo Testamento/
+│   │   │   ├── Pentateuco/
+│   │   │   ├── Livros Históricos/
+│   │   │   ├── Livros Poéticos/
+│   │   │   ├── Profetas Maiores/
+│   │   │   └── Profetas Menores/
+│   │   └── Novo Testamento/
+│   │       ├── Evangelhos/
+│   │       ├── Atos dos Apóstolos/
+│   │       ├── Epístolas Paulinas/
+│   │       ├── Epístolas Gerais/
+│   │       └── Apocalipse/
+│   ├── wiki/
+│   │   ├── conceitos/      ← Artigos de conceitos teológicos
+│   │   ├── temas/          ← Artigos de temas exegéticos
+│   │   ├── passagens/      ← Análises de perícopes
+│   │   ├── autores/        ← Pessoas (autores bíblicos, teólogos)
+│   │   ├── obras/          ← Fichas das fontes em raw/
+│   │   ├── periodos/       ← Contextos históricos
+│   │   └── tradicoes/      ← Tradições interpretativas
+│   ├── knowledge/          ← Sistema hipóteses → regras
+│   │   ├── cristologia/
+│   │   ├── soteriologia/
+│   │   ├── pneumatologia/
+│   │   ├── escatologia/
+│   │   ├── paulinas/
+│   │   ├── evangelhos/
+│   │   ├── hermeneutica/
+│   │   ├── historia-da-interpretacao/
+│   │   └── linguistica/
+│   ├── reports/
+│   │   ├── lint/           ← Relatórios semanais de health check
+│   │   ├── qa/             ← Respostas Q&A teológico
+│   │   ├── exegeses/       ← Relatórios exegéticos longos
+│   │   ├── tematicos/      ← Estudos temáticos
+│   │   └── slides/         ← Apresentações
+│   └── indices/            ← Índices e metadados do grafo
 ├── agents/
-│   ├── AGENTS.md               ← contrato normativo de agentes
-│   ├── INSTRUCTIONS.md         ← guia operacional por tipo de tarefa
-│   └── ontology.yaml           ← contrato de entidades e relações
-│
-└── scripts/
-    ├── enrichment_writer.py    — appenda seções em nós de versículo
-    ├── raw_searcher.py         — full-text search sobre raw/
-    ├── lint_checker.py         — health checks do vault
-    └── ntsk_linker.py          — gera bloco NTSK (pipeline original)
+│   ├── AGENTS.md           ← Contrato normativo de agentes
+│   ├── INSTRUCTIONS.md     ← Guia operacional por tipo de tarefa
+│   ├── ontology.yaml       ← Contrato de entidades e relações
+│   ├── prompts/            ← Prompts de agentes especializados
+│   ├── scripts/            ← Scripts Python para processamento
+│   ├── tests/              ← Testes automatizados
+│   ├── archive/            ← Versões obsoletas (não usar)
+│   └── output/             ← Saídas de graph_builder.py
+├── raw/                    ← Fontes primárias (local only, não versionado)
+│   └── dicionarios-enciclopedias/
+│       ├── IVP-Black/      ← DJG2, DPL2, DLNT, DNT-B, DOT-*
+│       ├── AYBD/           ← Anchor Yale Bible Dictionary
+│       ├── NIDB/           ← New Interpreter's Dict. of the Bible
+│       ├── teologicos/     ← EDT, DTIB, DBI-R
+│       ├── EAC/            ← Encyclopedia of Ancient Christianity
+│       └── especiais/      ← DDD, outros
+├── docs/                   ← Documentação do projeto
+│   └── convencoes.md       ← Siglas e símbolos NTSK
+├── CLAUDE.md               ← Instruções para agentes LLM
+├── LICENSE                 ← CC BY-SA 4.0
+└── setup.ps1               ← Script de configuração inicial
+```
+
+---
+
+## Início Rápido
+
+### Instalação
+
+```powershell
+# 1. Clonar repositório
+git clone https://github.com/seu-usuario/byblos-obsidian.git
+cd byblos-obsidian
+
+# 2. Instalar dependências Python
+pip install -r agents/requirements.txt
+
+# 3. Configurar Obsidian
+# - Abrir Obsidian → "Open folder as vault"
+# - Selecionar: C:\workspace\byblos-obsidian\vault
+# - Confirmar que Bíblia/, wiki/, knowledge/ aparecem como pastas irmãs
+```
+
+### Scripts Principais
+
+```powershell
+# Preview de conversão NTSK → wikilinks
+python agents/scripts/ntsk_linker.py --vault vault/Bíblia --dry-run --report preview.csv
+
+# Construir grafo completo
+python agents/scripts/graph_builder.py vault/Bíblia agents/output
+
+# Parse de arquivo individual
+python -c "from agents.scripts.vault_parser import parse_file; n=parse_file('vault/Bíblia/Novo Testamento/Evangelhos/João/Jo-1.1.md'); print(n.referencia)"
 ```
 
 ---
@@ -78,43 +132,45 @@ vault/
 
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
-| Livro | `<NomeLivro>.md` | `Filemon.md`, `Mateus.md` |
-| Capítulo | `<SGL>-<cap>.md` | `Fm-1.md`, `Mt-1.md` |
-| Versículo | `<SGL>-<cap>.<v>.md` | `Fm-1.1.md`, `Mt-1.25.md` |
+| Livro | `<NomeLivro>.md` | `João.md`, `Gênesis.md` |
+| Capítulo | `<SGL>-<cap>.md` ou `<SGL> <cap>.md` | `Jo-1.md` ou `Jo 1.md` |
+| Versículo | `<SGL>-<cap>.<v>.md` ou `<SGL> <cap>.<v>.md` | `Jo-1.1.md` ou `Jo 1.1.md` |
 
 ### Wiki
 
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
 | Conceito | `<nome-normalizado>.md` | `justificacao-pela-fe.md` |
-| Perícope | `<SGL>-<cap>.<vi>-<vf>.md` | `Fm-1.1-7.md` |
-| Obra | `<SIGLA>.md` | `DPL2.md` |
+| Passagem | `<SGL>-<cap>.<vi>-<vf>.md` | `Jo-1.1-18.md` |
+| Obra | `<SIGLA>.md` | `DPL2.md`, `BDAG.md` |
 
 ### Reports
 
-| Tipo | Padrão |
-|------|--------|
-| Lint | `reports/lint/YYYY-MM-DD.md` |
-| Q&A | `reports/qa/<slug>-YYYY-MM-DD.md` |
-| Alerta de agente | `reports/qa/ALERTA-YYYY-MM-DD.md` |
+| Tipo | Padrão | Exemplo |
+|------|--------|---------|
+| Lint | `reports/lint/YYYY-MM-DD.md` | `2026-04-05.md` |
+| Q&A | `reports/qa/YYYY-MM-DD_{slug}.md` | `2026-04-05_cristologia-joao-1-1.md` |
 
 ---
 
 ## Grafo NTSK — Símbolos
 
-O campo `NTSK` em cada nó de versículo pode conter um ou mais símbolos.
-Cada símbolo implica uma aresta em um subgrafo específico:
+O campo `NTSK` em cada nó de versículo pode conter símbolos que implicam arestas no grafo:
 
-| Símbolo | Relação | Subgrafo |
-|---------|---------|----------|
-| `✡` | AT prefigura NT (tipologia) | Grafo tipológico |
-| `▶` | NT cita/alude AT | Grafo de citações AT→NT |
-| `⚓` | Ancora passagem doutrinária | Grafo doutrinário |
-| `🔀` | Paralelo literário/sinótico | Grafo de paralelos |
-| `‡` | Aviso textual/tradução | Grafo de issues textuais |
-| `→` | Fluxo narrativo (causa→efeito) | Grafo narrativo |
-
-Queries Dataview para cada subgrafo estão em `agents/INSTRUCTIONS.md` (Tarefa 4).
+| Símbolo | Significado | Tipo de aresta no grafo |
+|---------|-------------|------------------------|
+| * | Referência especialmente clara | `especially_clear` |
+| ✓ | Referência criticamente pertinente | `critically_clear` |
+| + | Coleção mais completa | `full_collection` |
+| ◐ | Contraste / posição alternativa | `contrast` |
+| = | Tipo ou antítipo | `type_antitype` |
+| ⩲ | Tipo/antítipo (base escritural) | `type_antitype_scriptural` |
+| ▶ | Citação AT→NT | `ot_quote_in_nt` |
+| ✡ | Cumprimento de profecia | `fulfills_prophecy` |
+| ∥ | Passagem paralela estrita | `parallel_passage` |
+| ‡ | Doutrina falsa / uso indevido | `false_doctrine_proof` |
+| ❅S# | Strong Hebraico | — (metadado do nó) |
+| ✣S# | Strong Grego | — (metadado do nó) |
 
 ---
 
@@ -122,114 +178,113 @@ Queries Dataview para cada subgrafo estão em `agents/INSTRUCTIONS.md` (Tarefa 4
 
 | Nível | Tipo | Exemplos |
 |-------|------|----------|
-| 1 | Texto original com aparato crítico | BHS, NA28, UBS5, LXX |
-| 2 | Léxicos acadêmicos | BDAG, BDB, HALOT |
-| 3 | Dicionários e comentários técnicos | AYBD, DPL2, DJG2, NIDB |
-| 4 | Teologia sistemática | EDT, DTIB, DBI-R |
-| 5 | Literatura secundária / Blogs | *(proibido em seções factuais)* |
+| 1 | Texto bíblico primário | BHS, NA28, LXX, BKJ, KJV |
+| 2 | Léxicos técnicos | BDAG, BDB, HALOT, TDNT, Strong |
+| 3 | Comentários exegéticos | ICC, NICNT, NICOT, WBC, Hermeneia |
+| 4 | Teologia sistemática | Bavinck, Berkhof, Grudem |
+| 5 | Periódicos acadêmicos | JBL, NTS, JETS, WTJ |
+| 6 | Obras populares | Referência apenas, nunca suporte doutrinário |
 
-A tag de citação padrão é:
+**Tag de citação padrão:**
 ```
 [Fonte: raw/<pasta>/<arquivo> | Obra: <SIGLA> | Nível: N]
 ```
 
 ---
 
-## Scripts
+## Git Conventions
 
-### enrichment_writer.py
-Appenda seções de enriquecimento em nós de versículo.
-Valida regras de proveniência e ordem de seções antes de gravar.
+Cada commit segue padrão semântico com escopo:
 
-```python
-from scripts.enrichment_writer import EnrichmentSection, append_enrichment
+| Prefixo | Quando usar |
+|---------|-------------|
+| `feat(agents):` | Nova funcionalidade em agentes |
+| `fix(docs):` | Correção em documentação |
+| `refactor(structure):` | Reorganização de estrutura |
+| `chore(deps):` | Atualização de dependências |
+| `docs(readme):` | Atualização de README |
 
-result = append_enrichment(
-    "Bíblia/Novo Testamento/Epístolas Paulinas/Filemón/Fm-1.1.md",
-    sections=[
-        EnrichmentSection(
-            title="Léxico",
-            content="| δοῦλος | doûlos | escravo | ... | [Fonte: raw/IVP-Black/DPL2.txt | Obra: DPL2 | Nível: 3] |"
-        )
-    ],
-    dry_run=True   # revisar antes de gravar
-)
-print(result['diff_preview'])
+---
+
+## Documentação
+
+- **[`CLAUDE.md`](CLAUDE.md)** — Bootstrap: leia ANTES de qualquer tarefa
+- **[`agents/AGENTS.md`](agents/AGENTS.md)** — Contrato do vault (versão autoritativa)
+- **[`agents/INSTRUCTIONS.md`](agents/INSTRUCTIONS.md)** — Guia de tarefas por tipo
+- **[`agents/ontology.yaml`](agents/ontology.yaml)** — Contrato de entidades e relações
+- **[`docs/convencoes.md`](docs/convencoes.md)** — Siglas e símbolos NTSK
+
+---
+
+## Agentes Disponíveis
+
+### IngestionAgent
+Indexa nova obra em `raw/` e cria ficha em `vault/wiki/obras/`
+
+### EnrichmentAgent
+Adiciona seções aos nós de versículo (Léxico, Contexto, Posições Exegéticas)
+
+### WikiCompilerAgent
+Cria/mantém artigos em `vault/wiki/conceitos/`, `vault/wiki/autores/`, `vault/wiki/temas/`
+
+### ResearchAgent
+Q&A contra o vault + gestão de `vault/knowledge/` (hipóteses → regras)
+
+### GraphAnalystAgent
+Análise do grafo NTSK via scripts e queries Dataview
+
+### LintAgent
+Health checks periódicos com output em `vault/reports/lint/`
+
+---
+
+## Sistema de Conhecimento Epistêmico
+
+O vault implementa um sistema de promoção epistêmica em `vault/knowledge/{domínio}/`:
+
+```
+HIPÓTESE (hypotheses.md)
+  ↓ 2+ fontes Nível 2-3, sem contradição Nível 1
+KNOWLEDGE (knowledge.md)
+  ↓ 3+ fontes Nível 2-3, 2+ tradições
+RULE (rules.md)
 ```
 
-### raw_searcher.py
-Full-text search sobre obras em raw/.
-
-```python
-from scripts.raw_searcher import RawSearcher
-
-searcher = RawSearcher("raw/")
-hits = searcher.search_entry("δοῦλος", siglas=["DPL2", "DLNT"])
-for h in hits:
-    print(h.citation_tag)
-    print(h.context)
-```
-
-### lint_checker.py
-Health checks do vault. Gera relatório em `reports/lint/`.
-
-```bash
-python scripts/lint_checker.py vault/ reports/lint/
-```
+Domínios disponíveis:
+- **Teológicos**: cristologia, soteriologia, pneumatologia, escatologia
+- **Por Corpus**: paulinas, evangelhos
+- **Metodológicos**: hermeneutica, historia-da-interpretacao, linguistica
 
 ---
 
 ## Fluxo de Trabalho Típico
 
-```
-1. Adicionar obra a raw/
-         ↓
-2. Criar ficha em wiki/obras/ (IngestionAgent via Tarefa 5)
-         ↓
-3. Escolher versículo/perícope para enriquecer
-         ↓
-4. raw_searcher: localizar fontes relevantes → citation tags
-         ↓
-5. enrichment_writer: append seções com dry_run=True → revisar → gravar
-         ↓
-6. Se surgiram conceitos novos → criar artigo em wiki/conceitos/ (Tarefa 3)
-         ↓
-7. lint_checker: health check → corrigir issues críticos
-         ↓
-8. git commit -m "[agent:Enrichment] Fm-1.1: léxico + contexto"
-```
+1. **Adicionar obra** a `raw/dicionarios-enciclopedias/`
+2. **Criar ficha** em `vault/wiki/obras/` (IngestionAgent)
+3. **Escolher versículo/perícope** para enriquecer
+4. **Consultar fontes** via tabela "Decisão de Obra por Corpus" (AGENTS.md)
+5. **Adicionar enriquecimento** ao nó de versículo
+6. **Se surgirem conceitos novos**, criar artigo em `vault/wiki/conceitos/`
+7. **Classificar conhecimento** em `vault/knowledge/{domínio}/`
+8. **Commit semântico** com prefixo apropriado
 
 ---
 
-## Git Conventions
+## Licença
 
-Cada sessão de agente gera commits com mensagem padronizada:
-
-| Prefixo | Quando usar |
-|---------|-------------|
-| `[agent:Ingestion]` | Nova obra indexada em wiki/obras/ |
-| `[agent:Enrichment]` | Seções adicionadas a nó de versículo |
-| `[agent:Research]` | Novo artigo em wiki/ ou reports/ |
-| `[agent:Lint]` | Relatório de health check |
-| `[agent:LintFix]` | Correção de issue detectado pelo lint |
-| `[ontology:update]` | Modificação em agents/ontology.yaml |
-| `[manual]` | Qualquer edição feita diretamente pelo humano |
+- Conteúdo original: [CC BY-SA 4.0](LICENSE)
+- Textos bíblicos incluídos: domínio público (BKJ1611, KJV)
 
 ---
 
 ## Próximos Passos Recomendados
 
-1. **Calibração**: rodar Tarefa 1 completa em `Fm-1.1.md` (versículo pequeno, rico).
-2. **Indexar fontes**: para cada arquivo em `raw/`, criar ficha em `wiki/obras/` (Tarefa 5).
-3. **Primeiro lint**: `python scripts/lint_checker.py . reports/lint/` — estabelecer baseline.
-4. **Expandir grafo**: identificar pares AT→NT com símbolo `▶` em Mt 1.1–25 e criar
-   artigos de conceito para as tipologias messiânicas encontradas.
-5. **Congelar ontologia**: não alterar `ontology.yaml` até 2026-06-04 sem justificativa.
+1. **Calibração**: rodar enriquecimento completo em `Jo-1.1.md` (versículo rico, teologicamente denso)
+2. **Indexar fontes**: criar fichas em `vault/wiki/obras/` para cada diretório em `raw/`
+3. **Primeiro lint**: estabelecer baseline com `agents/scripts/lint_checker.py` (quando criado)
+4. **Expandir grafo**: identificar pares AT→NT com símbolo `▶` e criar artigos de conceito
+5. **Congelar ontologia**: não alterar `agents/ontology.yaml` sem justificativa documentada
 
 ---
 
-## Documentação dos Agentes
-
-- Contrato normativo (o que pode/deve/proibido): `agents/AGENTS.md`
-- Guia operacional por tarefa (como executar): `agents/INSTRUCTIONS.md`
-- Contrato de entidades e relações: `agents/ontology.yaml`
+**Estado**: Atualizado em 2026-04-05 | Repositório em limpeza ativa
