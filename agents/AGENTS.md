@@ -1,5 +1,5 @@
 # AGENTS.md — Vault Bíblico-Teológico
-> Versão: 1.1 | 2026-04-04
+> Versão: 1.2 | 2026-04-04
 
 ---
 
@@ -23,15 +23,24 @@ vault/
 │   ├── pessoas/
 │   ├── obras/
 │   └── temas/
+├── knowledge/                     # camada epistemológica — gerenciada pelo ResearchAgent
+│   └── {domínio}/
+│       ├── knowledge.md           # fato confirmado por fonte Nível 1-3
+│       ├── hypotheses.md          # plausível, sem confirmação multi-fonte ainda
+│       └── rules.md               # confirmado 3+ vezes em Nível 2-3 independentes
 ├── reports/
 │   └── lint/
 └── agents/
-    ├── AGENTS.md
+    ├── CLAUDE.md                  # bootstrap — leia ANTES deste arquivo
+    ├── AGENTS.md                  # este arquivo
     ├── INSTRUCTIONS.md
+    ├── CHANGELOG.md
+    ├── ontology.yaml
     ├── scripts/
     │   ├── vault_parser.py
     │   ├── ntsk_parser.py
     │   └── graph_builder.py
+    ├── archive/                   # versões obsoletas — NÃO usar
     └── output/
         ├── nodes.json
         ├── edges.json
@@ -68,11 +77,57 @@ Escala de autoridade:
 |-------|------|---------|
 | 1 | Texto canônico | KJV, BKJ, NA28, BHS |
 | 2 | Léxico primário | BDAG, BDB, HALOT, TDNT |
-| 3 | Dicionário especializado | AYBD, NIDB, IVP-Black, DDD, EAC |
+| 3 | Dicionário especializado | AYBD, NIDB, IVP-Black series, DDD, EAC |
 | 4 | Dicionário teológico geral | EDT, DTIB, DBI-R |
 | 5 | Inferência do agente |
 
 Inferências vão EXCLUSIVAMENTE em `## Lacunas Identificadas`, marcadas `[INFERÊNCIA DO AGENTE]`.
+
+---
+
+## Epistemologia do Vault
+
+### Ciclo de promoção epistêmica
+
+Cada item em `vault/knowledge/{domínio}/` tem um estado: **hipótese**, **knowledge** ou **rule**.
+
+```
+HIPÓTESE → KNOWLEDGE quando:
+  ✓ Confirmada por 2+ fontes independentes de Nível 2-3
+  ✓ Sem contradição em Nível 1 (texto grego/hebraico)
+
+KNOWLEDGE → RULE quando:
+  ✓ Confirmada por 3+ fontes independentes de Nível 2-3
+  ✓ Sem contradição em Nível 1
+  ✓ Representada em pelo menos 2 tradições distintas
+    (ou explicitamente marcada como posição de tradição específica)
+
+RULE → HIPÓTESE (rebaixamento) quando:
+  ✗ Contradita por evidência de Nível 1 (texto primário)
+  ✗ Contradita por revisão crítica em Nível 2 publicada após a rule
+```
+
+### Domínios de knowledge/
+
+Subdiretórios criados conforme a necessidade. Exemplos canônicos:
+
+| Domínio | Cobertura |
+|---------|----------|
+| `paulinas/` | Cartas Paulinas — teologia, contexto, autoria |
+| `evangelhos/` | Evangelhos Sinóticos e João |
+| `hermeneutica/` | Princípios de interpretação |
+| `historia/` | Contexto histórico-cultural |
+| `linguistica/` | Hebraico / Grego — padrões identificados |
+
+### Regras do ResearchAgent para knowledge/
+
+1. Ao final de **todo Q&A**, classificar os outputs:
+   - Fato confirmado com Nível 1-3 → propor entrada em `knowledge.md`
+   - Conexão plausível sem fonte → propor entrada em `hypotheses.md`
+   - Padrão confirmado 3+ vezes → propor entrada em `rules.md`
+2. Todo item proposto deve ter flag `[PROPOSTA — aguarda aprovação do proprietário]`
+3. **Nunca escrever diretamente em knowledge/ sem aprovação explícita**
+4. Uma Q&A sem proposta de classificação epistemológica é tarefa incompleta
 
 ---
 
@@ -102,7 +157,7 @@ Inferências vão EXCLUSIVAMENTE em `## Lacunas Identificadas`, marcadas `[INFER
 | DTIB | Dictionary for Theological Interpretation | Hermenêutica | 4 |
 | DBI-R | Dictionary of Biblical Imagery (Ryken) | Literatura/imagem | 4 |
 
-### Descartadas (raw/_arquivo/)
+### Descartadas (agents/archive/)
 ISBE-R, ZEB, DJG1, DPL1, DOT-H, EC, EDCSWR, DCS, NDT, GDT
 
 ---
@@ -243,23 +298,29 @@ python -c "from vault_parser import parse_file; n=parse_file('Bíblia/Mt-1.1.md'
 ## Agentes
 
 ### IngestionAgent
-**Responsabilidade:** Indexar nova obra em `raw/` e criar ficha em `wiki/obras/`
+**Responsabilidade:** Indexar nova obra em `raw/` e criar ficha em `wiki/obras/`  
 **Proibições:** criar arquivos em `Bíblia/`; modificar `raw/`
 
 ### EnrichmentAgent
-**Responsabilidade:** Adicionar seções aos nós de versículo
-**Fluxo:** ler nó → identificar termos → consultar obras na ordem da tabela → adicionar seções com proveniência
+**Responsabilidade:** Adicionar seções aos nós de versículo  
+**Fluxo:** ler nó → identificar termos → consultar obras na ordem da tabela → adicionar seções com proveniência  
 **Proibições:** modificar frontmatter; alterar KJV/BKJ; alterar navegação
 
 ### WikiCompilerAgent
-**Responsabilidade:** Criar/manter artigos em `wiki/conceitos/`, `wiki/pessoas/`, `wiki/temas/`
+**Responsabilidade:** Criar/manter artigos em `wiki/conceitos/`, `wiki/pessoas/`, `wiki/temas/`  
 **Acionamento:** conceito aparece em 3+ versículos sem artigo próprio
 
 ### ResearchAgent
-**Responsabilidade:** Q&A contra o vault
-**Output:** `reports/{YYYY-MM-DD}_{slug}.md` com seções: Resposta / Fatos Citados / Inferências / Lacunas / Versículos Relacionados
+**Responsabilidade:** Q&A contra o vault + gestão de `vault/knowledge/`  
+**Output Q&A:** `reports/{YYYY-MM-DD}_{slug}.md` com seções: Resposta / Fatos Citados / Inferências / Lacunas / Versículos Relacionados  
+**Output knowledge:** proposta de entradas em `knowledge/`, `hypotheses/` ou `rules/` — sempre com flag `[PROPOSTA — aguarda aprovação]`  
+**Regra:** toda sessão de Q&A deve terminar com ao menos 1 proposta de classificação epistêmica ou justificativa explícita de por que nenhuma entry é cabível
+
+### GraphAnalystAgent
+**Responsabilidade:** Análise do grafo NTSK via scripts e Dataview  
+**Acionamento:** queries de conexão, orphan detection, análise de subgrafos tipológicos
 
 ### LintAgent
-**Responsabilidade:** Health checks periódicos
-**Verificações:** seções sem `[Fonte: ...]`; wikilinks quebrados; inferências fora de "Lacunas"; frontmatter intacto; duplicações em wiki/
+**Responsabilidade:** Health checks periódicos  
+**Verificações:** seções sem `[Fonte: ...]`; wikilinks quebrados; inferências fora de "Lacunas"; frontmatter intacto; duplicações em wiki/; itens em knowledge/ sem flag de aprovação resolvida  
 **Output:** `reports/lint/YYYY-MM-DD.md`
