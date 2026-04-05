@@ -1,4 +1,4 @@
-"""graph_builder.py — Constrói e exporta o grafo de conhecimento do vault.
+﻿"""graph_builder.py â€” ConstrÃ³i e exporta o grafo de conhecimento do vault.
 Uso: python graph_builder.py <vault_dir> [output_dir]
 Produz: nodes.json, edges.json, graph_stats.json
 """
@@ -48,12 +48,12 @@ def build_graph(nodes):
                       "edge_types": dict(et), "missing_books": dict(missing)}}
 
 def export_graph(vault_dir: str, output_dir: str = "."):
-    biblia_path = Path(vault_dir) / "Bíblia"
+    biblia_path = Path(vault_dir) / "BÃ­blia"
     if not biblia_path.exists():
-        # fallback para "Biblia" sem acento (vaults antigos)
-        biblia_path = Path(vault_dir) / "Biblia"
+        # fallback para "Bíblia" sem acento (vaults antigos)
+        biblia_path = Path(vault_dir) / "Bíblia"
     if not biblia_path.exists():
-        print(f"[ERRO] Diretório Bíblia não encontrado em: {vault_dir}")
+        print(f"[ERRO] DiretÃ³rio BÃ­blia nÃ£o encontrado em: {vault_dir}")
         print(f"       Verifique o caminho: {Path(vault_dir).resolve()}")
         sys.exit(1)
     nodes = parse_vault(biblia_path)
