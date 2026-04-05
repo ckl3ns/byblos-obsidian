@@ -1,5 +1,5 @@
 # INSTRUCTIONS.md — Guia Operacional por Tarefa
-> Vault Bíblico-Teológico | v1.0 | 2026-04-04
+> Vault Bíblico-Teológico | v1.1 | 2026-04-04
 
 ---
 
@@ -240,7 +240,7 @@ caminho_raw: raw/AYBD/
 
 ## Pontos Fortes
 
-## Limitações e Vieses Conhecidos
+## Limitações e Viéses Conhecidos
 
 ## Como Usar neste Vault
 
@@ -265,6 +265,8 @@ caminho_raw: raw/AYBD/
 [ ] Artigos em wiki/conceitos/ referenciando < 2 versículos
 [ ] Duplicatas em wiki/ (mesmo conceito, nomes diferentes)
 [ ] Obras em raw/ sem ficha em wiki/obras/
+[ ] Itens em knowledge/ com flag [PROPOSTA] há mais de 7 dias sem resolução
+[ ] Sessões de Q&A em reports/ sem entrada correspondente em knowledge/
 ```
 
 ### Template do relatório
@@ -294,6 +296,8 @@ caminho_raw: raw/AYBD/
 - Arestas tipológicas (✡): X
 - Arestas AT→NT (▶): X
 - Obras indexadas: X / {total disponível}
+- Itens em knowledge/ por status: X hypothesis | X knowledge | X rule
+- Propostas pendentes de aprovação: X
 ```
 
 ---
@@ -351,4 +355,78 @@ obras_consultadas: []
 ## Versículos Relacionados
 
 {Links para nós do vault que aprofundam o tema}
+```
+
+4. **Classificação epistemológica obrigatória** (ver Tarefa 8)
+
+---
+
+## Tarefa 8 — Classificação Epistêmica (knowledge/)
+
+**Agente:** ResearchAgent  
+**Gatilho:** obrigatório ao final de todo Q&A (Tarefa 7); opcional após enriquecimento (Tarefa 1)  
+**Output:** proposta de entrada em `vault/knowledge/{domínio}/`
+
+### Critérios de classificação
+
+```
+HIPOTESE (hypotheses.md)
+  → Conexão plausível identificada mas sem fonte confirmada de Nível 1-3
+  → Inferência do agente que merece investigação futura
+
+KNOWLEDGE (knowledge.md)
+  → Fato confirmado por 2+ fontes independentes de Nível 2-3
+  → Sem contradição em Nível 1 (texto grego/hebraico)
+
+RULE (rules.md)
+  → Padrão confirmado por 3+ fontes independentes de Nível 2-3
+  → Representado em pelo menos 2 tradições distintas
+  → Sem contradição em Nível 1
+```
+
+### Template de proposta
+
+```markdown
+## Proposta Epistemológica — {DATA}
+
+**Origem:** report `{slug}` ou enriquecimento `{nó}`  
+**Domínio:** `vault/knowledge/{domínio}/`  
+**Status proposto:** HIPOTESE | KNOWLEDGE | RULE  
+**Flag:** [PROPOSTA — aguarda aprovação do proprietário]
+
+### Item
+
+> {Afirmação em 1-3 frases. Objetiva. Sem hedging desnecessário.}
+
+### Evidência de suporte
+
+| Fonte | Sigla | Nível | Trecho relevante |
+|-------|-------|-------|------------------|
+
+### Contradições conhecidas
+
+{Lista ou "nenhuma identificada"}
+
+### Próximos passos para promoção
+
+{O que falta para subir de status? Qual fonte consultar?}
+```
+
+### Domínios primários
+
+| Domínio | Pasta | Quando usar |
+|---------|-------|-------------|
+| Paulinas | `paulinas/` | Cartas de Paulo, contexto, autoria, teologia |
+| Evangelhos | `evangelhos/` | Sinóticos, João, questão sinótica |
+| Hermenêutica | `hermeneutica/` | Princípios interpretativos identificados |
+| História | `historia/` | Contexto histórico-cultural confirmado |
+| Linguística | `linguistica/` | Padrões em hebraico/grego |
+
+### Regra de fail-safe
+
+Se ao final de um Q&A nenhum item preenche os critérios acima, o agente deve registrar:
+
+```markdown
+**Classificação epistemológica:** nenhuma entrada proposta.  
+**Motivo:** {razão explícita — ex.: "respostas são exploratórias, fontes Nível 3 não consultadas ainda"}
 ```
