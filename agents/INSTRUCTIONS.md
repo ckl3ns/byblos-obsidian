@@ -438,3 +438,104 @@ Se ao final de um Q&A nenhum item preenche os critérios acima, o agente deve re
 **Classificação epistemológica:** nenhuma entrada proposta.  
 **Motivo:** {razão explícita — ex.: "respostas são exploratórias, fontes Nível 3 não consultadas ainda"}
 ```
+
+---
+
+## Convenções de Nomenclatura de Arquivos
+
+### wiki/passagens/
+
+**Formato:** `{sigla}_{cap}_{vers_inicio}-{vers_fim}.md`
+
+**Exemplos:**
+- `Fm_1_1-7.md` — Filemom 1:1-7
+- `Jo_3_16-21.md` — João 3:16-21
+- `Rm_8_28-39.md` — Romanos 8:28-39
+- `Gn_1_1-31.md` — Gênesis 1:1-31
+- `Sl_23_1-6.md` — Salmo 23:1-6
+
+**Regras:**
+- Sigla conforme ontology.yaml (sem espaços, sem números romanos)
+- Underscores (_) separam sigla, capítulo e versículos
+- Hífen (-) separa versículo inicial e final
+- Capítulo e versículos sempre numéricos
+
+### wiki/conceitos/
+
+**Formato:** `{slug-em-kebab-case}.md`
+
+**Exemplos:**
+- `justificacao.md` — conceito de justificação
+- `reino-de-deus.md` — conceito de Reino de Deus
+- `espirito-santo.md` — conceito do Espírito Santo
+- `apostolo.md` — conceito de apóstolo
+- `alianca.md` — conceito de aliança
+
+**Regras:**
+- Tudo em minúsculas
+- Hífens (-) substituem espaços
+- Sem acentos nos nomes de arquivo (usar no frontmatter)
+- Um conceito = um arquivo
+
+### wiki/obras/
+
+**Formato:** `{SIGLA}.md` (sigla em CAPS conforme catalogação)
+
+**Exemplos:**
+- `AYBD.md` — Anchor Yale Bible Dictionary
+- `DJG2.md` — Dictionary of Jesus and the Gospels, 2ª ed.
+- `EDT.md` — Evangelical Dictionary of Theology
+- `BDAG.md` — Bauer-Danker-Arndt-Gingrich
+- `HALOT.md` — Hebrew and Aramaic Lexicon of the Old Testament
+
+**Regras:**
+- Sigla SEMPRE em MAIÚSCULAS
+- Conforme definido no catálogo de AGENTS.md
+- Um arquivo por obra (volumes agrupados)
+
+### wiki/autores/
+
+**Formato:** `{sobrenome-nome}.md` (kebab-case)
+
+**Exemplos:**
+- `bavinck-herman.md` — Herman Bavinck
+- `berkhof-louis.md` — Louis Berkhof
+- `calvino-joao.md` — João Calvino
+- `agostinho.md` — Agostinho (nome único)
+
+**Regras:**
+- Sobrenome primeiro (quando aplicável)
+- Kebab-case (hífens, minúsculas)
+- Nome canônico em português quando consagrado
+
+### vault/reports/
+
+**Formato:** `{YYYY-MM-DD}_{slug}.md`
+
+**Exemplos:**
+- `2026-04-05_lint.md` — relatório de lint semanal
+- `2026-04-05_justificacao-paulina.md` — Q&A sobre justificação
+- `2026-04-06_imago-dei.md` — Q&A sobre imagem de Deus
+- `2026-04-07_tipologia-moises.md` — análise temática
+
+**Regras:**
+- Data em formato ISO (YYYY-MM-DD)
+- Underscore (_) separa data e slug
+- Slug em kebab-case descritivo
+- Subpastas por tipo: `qa/`, `lint/`, `exegeses/`, `tematicos/`, `slides/`
+
+### vault/knowledge/
+
+**Formato de pastas:** `{dominio-em-kebab-case}/`
+
+**Exemplos de domínios:**
+- `cristologia/` — Pessoa e obra de Cristo
+- `soteriologia/` — Doutrina da salvação
+- `hermeneutica/` — Princípios interpretativos
+- `paulinas/` — Corpus paulino
+- `evangelhos/` — Evangelhos canônicos
+
+**Arquivos fixos em cada domínio:**
+- `hypotheses.md` — hipóteses (plausíveis, sem confirmação multi-fonte)
+- `knowledge.md` — conhecimento confirmado (2+ fontes Nível 2-3)
+- `rules.md` — regras estabelecidas (3+ fontes, 2+ tradições)
