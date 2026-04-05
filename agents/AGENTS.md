@@ -141,6 +141,29 @@ Subdiretórios criados conforme a necessidade. Domínios implementados:
 3. **Nunca escrever diretamente em knowledge/ sem aprovação explícita**
 4. Uma Q&A sem proposta de classificação epistemológica é tarefa incompleta
 
+### Regras para flags [PROPOSTA]
+
+Itens em `vault/knowledge/` com flag `[PROPOSTA — aguarda aprovação do proprietário]`:
+
+1. **Prazo de revisão**: Propostas devem ser revisadas dentro de **7 dias**
+2. **Responsável**: Proprietário do vault (humano)
+3. **Ações possíveis**:
+   - **Aprovar**: remover flag e manter item no arquivo
+   - **Rejeitar**: remover item ou mover para `agents/archive/rejected-proposals/`
+   - **Solicitar revisão**: manter flag e adicionar comentário com feedback
+4. **Expiração**: Propostas não revisadas após **14 dias** são sinalizadas no lint
+5. **Localização**: Propostas aparecem apenas em `hypotheses.md`, `knowledge.md` ou `rules.md`
+
+**Exemplo de item com flag:**
+```markdown
+### Justificação pela fé em Paulo [PROPOSTA — aguarda aprovação do proprietário]
+
+Romanos 3:28 estabelece que a justificação é exclusivamente pela fé, 
+independente das obras da lei.
+
+[Fonte: raw/dicionarios-enciclopedias/DPL2/justification.txt | Obra: DPL2 | Nível: 3]
+```
+
 ---
 
 ## Catálogo Tier 1 (obras em raw/)
