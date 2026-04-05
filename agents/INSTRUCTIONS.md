@@ -77,7 +77,7 @@
 ## Tarefa 2 — Artigo de Perícope
 
 **Agente:** WikiCompilerAgent  
-**Output:** `wiki/conceitos/{sigla}_{ref}.md`
+**Output:** `vault/wiki/passagens/{sigla}_{ref}.md`
 
 ### Template
 
@@ -133,7 +133,7 @@ tags: [epistolar, saudação, ecclesiologia]
 
 **Agente:** WikiCompilerAgent  
 **Gatilho:** conceito aparece em 3+ versículos no grafo sem página própria  
-**Output:** `wiki/conceitos/{slug}.md`
+**Output:** `vault/wiki/conceitos/{slug}.md`
 
 ### Template
 
@@ -305,7 +305,7 @@ caminho_raw: raw/AYBD/
 ## Tarefa 7 — Q&A Teológico
 
 **Agente:** ResearchAgent  
-**Output:** `reports/{YYYY-MM-DD}_{slug}.md`
+**Output:** `vault/reports/qa/YYYY-MM-DD_{slug}.md`
 
 ### Fluxo de execução
 
@@ -416,10 +416,17 @@ RULE (rules.md)
 
 | Domínio | Pasta | Quando usar |
 |---------|-------|-------------|
+| **Teológicos** |||
+| Cristologia | `cristologia/` | Pessoa e obra de Cristo |
+| Soteriologia | `soteriologia/` | Doutrina da salvação |
+| Pneumatologia | `pneumatologia/` | Doutrina do Espírito Santo |
+| Escatologia | `escatologia/` | Doutrina das últimas coisas |
+| **Por Corpus** |||
 | Paulinas | `paulinas/` | Cartas de Paulo, contexto, autoria, teologia |
 | Evangelhos | `evangelhos/` | Sinóticos, João, questão sinótica |
+| **Metodológicos** |||
 | Hermenêutica | `hermeneutica/` | Princípios interpretativos identificados |
-| História | `historia/` | Contexto histórico-cultural confirmado |
+| História da Interpretação | `historia-da-interpretacao/` | Contexto histórico-cultural e história da exegese |
 | Linguística | `linguistica/` | Padrões em hebraico/grego |
 
 ### Regra de fail-safe
