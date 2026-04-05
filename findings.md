@@ -23,3 +23,20 @@
 - A auditoria de lint gerou `vault/reports/lint/2026-04-05.md`, com 2 problemas criticos de fonte e 34 menores, sobretudo `LINK_QUEBRADO` e `PATH_RAW_INVALIDO`.
 - A limpeza de documentacao foi integrada em `agents/AGENTS.md` e `agents/INSTRUCTIONS.md`, sem impacto funcional direto na logica NTSK.
 - Depois dessa nova leitura do repositório, o principal risco anterior de conflito no parser caiu bastante, porque a correcao planejada pelo agente de NTSK ja esta presente no `main`.
+
+## Parser Normalization Wave
+
+- `agents/scripts/ntsk_parser.py` ainda usa um `BOOK_MAP` hardcoded e divergente dos arquivos em `docs/ntsk`; por exemplo, `Ex` resolve para `Ex` em vez de `Êx`, e `Jb` resolve incorretamente para `Jo` em vez de `Jó`.
+- `docs/ntsk/bible_books.json` confirma que o padrao canonico desejado deve ser `logos`, enquanto `tsk` representa a sigla de entrada mais comum do NTSK.
+- `docs/ntsk/bible_books.json` contem abreviaturas extras uteis para normalizacao, mas algumas sao ambiguas (`Jo`, `Jn`, `1 T`, `2 T`, `Ez`, `Es`); portanto a estrategia segura e priorizar `logos`, `tsk` e apenas aliases nao ambiguos.
+- `parse_ntsk_block("Jo 24:24mg.", ...)` hoje cria uma ref com `book_vault=None` e `verses=[]`, o que confirma que qualificadores como `mg` estao vazando para a expansao de versos e que siglas portuguesas ja canonicas nao sao aceitas pelo parser atual.
+- Casos reais de `unresolved_targets` mostraram tres regressões concretas:
+  - `Le 7:11-21, 29-34` perde o range final e gera `Lv 7.29-34`
+  - `Le 7:24, 26, 30-34` preserva `30-34` como verso literal
+  - `Le 7:37, 38. 11:46. 13:59. 14:54-57. 15:32, 33. 27:34` colapsa varios capitulos em `Lv 7`
+- A implementacao substituiu o mapa manual por um carregamento baseado em `docs/ntsk/ntsk_2_sigla.json` e `docs/ntsk/bible_books.json`, com saida canonica sempre em siglas `logos`.
+- Para evitar ambiguidade, aliases extras vindos de `abreviaturas` so entram no parser quando sao univocos; siglas explicitas do NTSK e do padrao `logos` continuam tendo prioridade.
+- A normalizacao previa das siglas passa a ocorrer antes do parse das referencias, o que permite aceitar `Ex`, `Le`, `Jb`, `Jn`, `1 S`, etc., mas gerar IDs canonicos como `Êx`, `Lv`, `Jó`, `Jo`, `1Sm`.
+- Qualificadores NTSK anexados ao verso (`mg`, `n`, `g`, `h`, `a`, `b`, `c`) deixaram de invalidar a referencia base e agora sao ignorados para fins de expansao do target.
+- Depois da regeneracao do grafo, `missing_books` caiu para `0` e `unresolved_count` caiu para `5058`.
+- Os casos criticos usados como regressao deixaram de aparecer em `unresolved_targets`: `Lv 7.29-34`, `Lv 7.30-34`, `Lv 7.46`, `Lv 7.59` e `Jo 24.24mg`.

@@ -11,7 +11,8 @@ Entender os padrões em `agents/output/graph_stats.json`, com foco em `unresolve
 | complete | Cruzar convenções com `unresolved_targets` | Separados casos de cobertura do grafo e ruído do parser |
 | complete | Reanalisar o repositório após merges dos agentes | Fix do parser, extractors, lint e docs já integrados |
 | complete | Definir desenho da melhoria a implementar | Todos os versículos devem existir como nós do grafo |
-| in_progress | Registrar spec e preparar execução em branch | Aguardando sua revisão do design escrito |
+| complete | Registrar spec e preparar execução em branch | Branch `feat/ntsk-reference-normalization` criada e plano de parser registrado |
+| complete | Corrigir normalização e extração NTSK no parser | Siglas canônicas, qualificadores NTSK e regressões reais cobertos em testes e no grafo |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

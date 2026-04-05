@@ -10,3 +10,11 @@
 - Branch `feat/graph-full-verse-nodes` criada para concentrar a proxima fase do trabalho.
 - Spec de design escrito em `docs/superpowers/specs/2026-04-05-unresolved-targets-graph-nodes-design.md`.
 - Plano de implementacao escrito em `docs/superpowers/plans/2026-04-05-full-verse-nodes-graph.md`.
+- Nova branch `feat/ntsk-reference-normalization` criada para a frente de normalizacao do parser NTSK.
+- Reabertos `docs/ntsk/bible_books.json`, `docs/ntsk/ntsk_2_sigla.json` e `docs/ntsk/symbols.txt` para guiar a padronizacao de siglas e qualificadores.
+- Confirmado por experimentos dirigidos que o parser atual falha em `Ex -> Êx`, `Jb -> Jó`, refs com `mg` e ranges mistos com carryover de capitulo.
+- Novo plano de implementacao salvo em `docs/superpowers/plans/2026-04-05-ntsk-reference-normalization.md`.
+- Testes de regressao escritos em `agents/tests/test_ntsk_parser.py` para siglas canonicas, qualificadores NTSK e casos reais de `unresolved_targets`.
+- `agents/scripts/ntsk_parser.py` atualizado para carregar o mapeamento a partir de `docs/ntsk`, normalizar siglas antes do parse e expandir corretamente ranges mistos e cadeias de capitulos.
+- Verificacao executada: `python -m pytest agents/tests/ agents/scripts/extractors/tests/ -v` com `87 passed`.
+- Grafo regenerado com `python agents/scripts/graph_builder.py vault agents/output`; resultado atual: `30989` nos, `1082304` arestas e `5058` unresolved targets.
