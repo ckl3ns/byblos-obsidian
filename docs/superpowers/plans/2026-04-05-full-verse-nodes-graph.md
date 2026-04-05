@@ -80,7 +80,7 @@ Expected: PASS completo
 
 - [ ] **Step 2: Generate fresh graph stats if needed for spot-check**
 
-Run: `python agents/scripts/graph_builder.py . agents/output`
+Run: `python agents/scripts/graph_builder.py vault agents/output`
 Expected: comando concluído com JSONs atualizados e `unresolved_targets` mais próximos de erros reais
 
 - [ ] **Step 3: Review git diff**

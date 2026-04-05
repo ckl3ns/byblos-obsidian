@@ -1,14 +1,16 @@
 """Testes para raw_searcher.py — layout real de raw/ e obras fragmentadas."""
+import os
 import sys
 import uuid
 from pathlib import Path
 
-sys.path.insert(0, "c:/workspace/byblos-obsidian/agents/scripts")
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 import raw_searcher
 from raw_searcher import RawSearcher
 
-TEST_TMP_ROOT = Path("c:/workspace/byblos-obsidian/.pytest_workspace")
+TEST_TMP_ROOT = Path(".pytest_workspace")
 TEST_TMP_ROOT.mkdir(parents=True, exist_ok=True)
 
 

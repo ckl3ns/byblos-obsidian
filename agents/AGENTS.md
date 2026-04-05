@@ -1,51 +1,50 @@
 # AGENTS.md — Vault Bíblico-Teológico
-> Versão: 1.2 | 2026-04-04
+> Versão: 1.3 | 2026-04-05
 
 ---
 
 ## Estrutura do Vault
 
 ```
-vault/
-├── Bíblia/                        # ⚠️ SOMENTE LEITURA
-│   ├── {Livro}.md                 # índice do livro
-│   ├── {Sigla}-{cap}.md           # índice do capítulo
-│   └── {Sigla}-{cap}.{vs}.md     # nó do versículo
-├── raw/                           # obras de referência (NÃO editar)
+repo/
+├── vault/
+│   ├── Bíblia/                        # ⚠️ SOMENTE LEITURA estrutural
+│   │   ├── {Livro}.md                 # índice do livro
+│   │   ├── {Sigla} {cap}.md           # índice do capítulo
+│   │   └── {Sigla} {cap}.{vs}.md      # nó do versículo
+│   ├── indices/
+│   ├── knowledge/                     # camada epistemológica
+│   │   └── {domínio}/
+│   │       ├── knowledge.md
+│   │       ├── hypotheses.md
+│   │       └── rules.md
+│   ├── reports/
+│   │   └── lint/
+│   └── wiki/
+│       ├── autores/
+│       ├── conceitos/
+│       ├── obras/
+│       ├── passagens/
+│       ├── periodos/
+│       ├── temas/
+│       └── tradicoes/
+├── raw/                               # obras de referência (NÃO editar)
 │   └── dicionarios-enciclopedias/
-│       ├── AYBD/
-│       ├── EDT/
-│       ├── IVP-Black/
-│       ├── NIDB/
-│       ├── *.txt                  # DDD, DTIB, EAC, DBI-R
-│       └── tmp/                   # staging / agregados, não canônico
-├── wiki/
-│   ├── conceitos/
-│   ├── pessoas/
-│   ├── obras/
-│   └── temas/
-├── knowledge/                     # camada epistemológica — gerenciada pelo ResearchAgent
-│   └── {domínio}/
-│       ├── knowledge.md           # fato confirmado por fonte Nível 1-3
-│       ├── hypotheses.md          # plausível, sem confirmação multi-fonte ainda
-│       └── rules.md               # confirmado 3+ vezes em Nível 2-3 independentes
-├── reports/
-│   └── lint/
-└── agents/
-    ├── CLAUDE.md                  # bootstrap — leia ANTES deste arquivo
-    ├── AGENTS.md                  # este arquivo
-    ├── INSTRUCTIONS.md
-    ├── CHANGELOG.md
-    ├── ontology.yaml
-    ├── scripts/
-    │   ├── vault_parser.py
-    │   ├── ntsk_parser.py
-    │   └── graph_builder.py
-    ├── archive/                   # versões obsoletas — NÃO usar
-    └── output/
-        ├── nodes.json
-        ├── edges.json
-        └── graph_stats.json
+├── agents/
+│   ├── AGENTS.md
+│   ├── INSTRUCTIONS.md
+│   ├── ontology.yaml
+│   ├── scripts/
+│   │   ├── vault_parser.py
+│   │   ├── ntsk_parser.py
+│   │   ├── graph_builder.py
+│   │   └── lint_checker.py
+│   ├── archive/                       # versões obsoletas — NÃO usar
+│   ├── output/
+│   └── tests/
+├── docs/
+├── README.md
+└── CLAUDE.md                          # bootstrap — leia antes deste arquivo
 ```
 
 ---
@@ -325,10 +324,10 @@ ISBE-R, ZEB, EC, EDCSWR, DCS, NDT, GDT
 Uso CLI:
 ```bash
 # Exportar grafo completo
-python agents/scripts/graph_builder.py . agents/output
+python agents/scripts/graph_builder.py vault agents/output
 
 # Parse de arquivo individual
-python -c "from vault_parser import parse_file; n=parse_file('Bíblia/Mt-1.1.md'); print(n.referencia, n.ntsk_raw[:100])"
+python -c "from agents.scripts.vault_parser import parse_file; n=parse_file('vault/Bíblia/Novo Testamento/Evangelhos/Mateus/Mt 1.1.md'); print(n.referencia, (n.ntsk_raw or '')[:100])"
 ```
 
 ---

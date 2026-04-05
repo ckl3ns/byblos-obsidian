@@ -1,7 +1,9 @@
 """Testes para o extrator de claims tipadas."""
+import os
 import sys
 
-sys.path.insert(0, "c:/workspace/byblos-obsidian/.worktrees/feature-kb-distillation-pipeline/agents/scripts")
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 from distillation_models import DistilledEntry
 from claim_extractor import extract_claims

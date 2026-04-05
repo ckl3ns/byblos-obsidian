@@ -1,7 +1,7 @@
 # byblos-obsidian
 
-> Vault de estudos bíblicos e teológicos com grafo de 31.000+ versículos,
-> infraestrutura de agentes LLM e sistema de gestão de conhecimento.
+> Vault de estudos bíblicos e teológicos com grafo de 30.989 nós de versículo,
+> 1.082.304 arestas NTSK, infraestrutura de agentes LLM e sistema de gestão de conhecimento.
 
 **byblos** (βύβλος) — papiro, livro; origem etimológica de "Bíblia".
 
@@ -13,12 +13,13 @@ O vault separa três camadas com regras diferentes:
 
 | Camada | Path | Quem escreve | Quem lê |
 |--------|------|--------------|---------|
-| **Texto bíblico** | `vault/Bíblia/` | Ninguém (gerado uma vez) | Todos |
+| **Texto bíblico** | `vault/Bíblia/` | Somente enriquecimento aditivo com aprovação explícita | Todos |
 | **Conhecimento compilado** | `vault/wiki/` | Agentes (com proveniência) | Todos |
 | **Fontes primárias** | `raw/` | Humano (cópia manual) | Agentes |
 | **Outputs** | `vault/reports/` | Agentes | Humano |
 
-Nenhum agente modifica `vault/Bíblia/`. Nenhuma afirmação factual vai para `vault/wiki/`
+Nenhum agente reescreve `vault/Bíblia/`. Enriquecimento aditivo ao final dos nós de versículo
+só ocorre com aprovação explícita. Nenhuma afirmação factual vai para `vault/wiki/`
 sem uma tag `[Fonte: raw/... | Obra: ... | Nível: N]`. Inferências ficam isoladas
 em seções "Lacunas Identificadas".
 
@@ -29,7 +30,7 @@ em seções "Lacunas Identificadas".
 ```
 byblos-obsidian/
 ├── vault/              ← Vault Obsidian (abrir aqui no Obsidian)
-│   ├── Bíblia/         ← Grafo bíblico: 31.102 nós de versículo
+│   ├── Bíblia/         ← Grafo bíblico: 30.989 nós de versículo
 │   │   ├── Antigo Testamento/
 │   │   │   ├── Pentateuco/
 │   │   │   ├── Livros Históricos/
@@ -107,7 +108,7 @@ pip install -r agents/requirements.txt
 
 # 3. Configurar Obsidian
 # - Abrir Obsidian → "Open folder as vault"
-# - Selecionar: C:\workspace\byblos-obsidian\vault
+# - Selecionar: <repo>/vault
 # - Confirmar que Bíblia/, wiki/, knowledge/ aparecem como pastas irmãs
 ```
 
@@ -118,10 +119,10 @@ pip install -r agents/requirements.txt
 python agents/scripts/ntsk_linker.py --vault vault/Bíblia --dry-run --report preview.csv
 
 # Construir grafo completo
-python agents/scripts/graph_builder.py vault/Bíblia agents/output
+python agents/scripts/graph_builder.py vault agents/output
 
 # Parse de arquivo individual
-python -c "from agents.scripts.vault_parser import parse_file; n=parse_file('vault/Bíblia/Novo Testamento/Evangelhos/João/Jo-1.1.md'); print(n.referencia)"
+python -c "from agents.scripts.vault_parser import parse_file; n=parse_file('vault/Bíblia/Novo Testamento/Evangelhos/João/Jo 1.1.md'); print(n.referencia)"
 ```
 
 ---
@@ -133,15 +134,15 @@ python -c "from agents.scripts.vault_parser import parse_file; n=parse_file('vau
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
 | Livro | `<NomeLivro>.md` | `João.md`, `Gênesis.md` |
-| Capítulo | `<SGL>-<cap>.md` ou `<SGL> <cap>.md` | `Jo-1.md` ou `Jo 1.md` |
-| Versículo | `<SGL>-<cap>.<v>.md` ou `<SGL> <cap>.<v>.md` | `Jo-1.1.md` ou `Jo 1.1.md` |
+| Capítulo | `<SGL> <cap>.md` | `Jo 1.md` |
+| Versículo | `<SGL> <cap>.<v>.md` | `Jo 1.1.md` |
 
 ### Wiki
 
 | Tipo | Padrão | Exemplo |
 |------|--------|---------|
 | Conceito | `<nome-normalizado>.md` | `justificacao-pela-fe.md` |
-| Passagem | `<SGL>-<cap>.<vi>-<vf>.md` | `Jo-1.1-18.md` |
+| Passagem | `<SGL>_<cap>_<vi>-<vf>.md` | `Jo_1_1-18.md` |
 | Obra | `<SIGLA>.md` | `DPL2.md`, `BDAG.md` |
 
 ### Reports
@@ -279,12 +280,12 @@ Domínios disponíveis:
 
 ## Próximos Passos Recomendados
 
-1. **Calibração**: rodar enriquecimento completo em `Jo-1.1.md` (versículo rico, teologicamente denso)
+1. **Calibração**: rodar enriquecimento completo em `Jo 1.1.md` (versículo rico, teologicamente denso)
 2. **Indexar fontes**: criar fichas em `vault/wiki/obras/` para cada obra canônica em `raw/dicionarios-enciclopedias/`
-3. **Primeiro lint**: estabelecer baseline com `agents/scripts/lint_checker.py` (quando criado)
+3. **Lint contínuo**: usar `agents/scripts/lint_checker.py` para acompanhar links quebrados, `path_raw` e seções sem fonte
 4. **Expandir grafo**: identificar pares AT→NT com símbolo `▶` e criar artigos de conceito
 5. **Congelar ontologia**: não alterar `agents/ontology.yaml` sem justificativa documentada
 
 ---
 
-**Estado**: Atualizado em 2026-04-05 | Repositório em limpeza ativa
+**Estado**: Atualizado em 2026-04-05 | Grafo atual com 30.989 nós e 1.082.304 arestas

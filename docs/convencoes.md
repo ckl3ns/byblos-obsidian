@@ -1,5 +1,8 @@
 # Convenções do Vault
 
+As referências do NTSK são normalizadas para a sigla canônica usada no vault
+(padrão Logos/PT-BR) antes da extração de arestas do grafo.
+
 ## Siglas dos Livros (Vault PT-BR ↔ NTSK EN)
 
 | Vault | NTSK | Livro         || Vault | NTSK | Livro              |
@@ -48,7 +51,7 @@
 ## Nomeação de Arquivos
 
 ```
-Bíblia/:   {Sigla}-{Cap}.{Vers}.md     ex: Mt-1.1.md, Fm-1.1.md
+Bíblia/:   {Sigla} {Cap}.{Vers}.md     ex: Mt 1.1.md, Fm 1.1.md
 wiki/:     {tipo}/{slug-kebab-case}.md  ex: conceitos/justificacao-pela-fe.md
 reports/:  {tipo}/{YYYY-MM-DD}_{slug}.md
 ```

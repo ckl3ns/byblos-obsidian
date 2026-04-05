@@ -1,7 +1,10 @@
 """Testes para graph_builder.py — bidirecionalidade, deduplicação e métricas."""
+import os
 import sys
 from types import SimpleNamespace
-sys.path.insert(0, "c:/workspace/byblos-obsidian/agents/scripts")
+
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 from graph_builder import (
     _build_edges_from_ref, _deduplicate_edges, _edge_type_from_ref, _book, build_graph,

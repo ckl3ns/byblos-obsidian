@@ -1,15 +1,17 @@
 """Testes para o indexador de verbetes da pipeline de destillacao."""
+import os
 import sys
 import uuid
 from pathlib import Path
 
-sys.path.insert(0, "c:/workspace/byblos-obsidian/.worktrees/feature-kb-distillation-pipeline/agents/scripts")
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 from distillation_manifest import build_manifest
 from distillation_indexer import index_source_entries
 
 
-TEST_TMP_ROOT = Path("c:/workspace/byblos-obsidian/.pytest_workspace")
+TEST_TMP_ROOT = Path(".pytest_workspace")
 TEST_TMP_ROOT.mkdir(parents=True, exist_ok=True)
 
 

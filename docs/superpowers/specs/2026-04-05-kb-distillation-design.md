@@ -1,8 +1,8 @@
 # KB Distillation Pipeline Design
 
 **Date:** 2026-04-05
-**Branch:** `feature/kb-distillation-pipeline`
-**Worktree:** `C:\workspace\byblos-obsidian\.worktrees\feature-kb-distillation-pipeline`
+**Status:** merged into `main`
+**Repository Root:** `C:\workspace\byblos-obsidian`
 
 ## Goal
 

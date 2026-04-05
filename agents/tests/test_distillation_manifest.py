@@ -1,8 +1,10 @@
 """Testes para o manifesto de fontes da pipeline de destilacao."""
+import os
 import sys
 from pathlib import Path
 
-sys.path.insert(0, "c:/workspace/byblos-obsidian/.worktrees/feature-kb-distillation-pipeline/agents/scripts")
+script_dir = os.path.join(os.path.dirname(__file__), "..", "scripts")
+sys.path.insert(0, os.path.abspath(script_dir))
 
 from distillation_manifest import build_manifest
 

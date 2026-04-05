@@ -1,16 +1,16 @@
 # INSTRUCTIONS.md — Guia Operacional por Tarefa
-> Vault Bíblico-Teológico | v1.1 | 2026-04-04
+> Vault Bíblico-Teológico | v1.2 | 2026-04-05
 
 ---
 
 ## Tarefa 1 — Enriquecimento de Versículo
 
 **Agente:** EnrichmentAgent  
-**Gatilho:** `kb enrich Fm-1.1` ou pedido direto
+**Gatilho:** `kb enrich "Fm 1.1"` ou pedido direto
 
 ### Passo a passo
 
-1. **Ler o nó** (`Bíblia/{Sigla}-{cap}.{vs}.md`)
+1. **Ler o nó** (`vault/Bíblia/{Sigla} {cap}.{vs}.md`)
    - Extrair: referência, testamento, texto KJV/BKJ, bloco NTSK
    - Executar `ntsk_parser.py` para obter Strong numbers e referências tipológicas
 
@@ -115,7 +115,7 @@ tags: [epistolar, saudação, ecclesiologia]
 
 ## Análise Versículo a Versículo
 
-{Links para nós individuais: [[Fm-1.1]], [[Fm-1.2]], etc.}
+{Links para nós individuais: [[Fm 1.1]], [[Fm 1.2]], etc.}
 
 ## Teologia da Perícope
 
@@ -204,7 +204,7 @@ LIMIT 50
 ### Via Python (para grafos maiores)
 
 ```bash
-python agents/scripts/graph_builder.py . agents/output
+python agents/scripts/graph_builder.py vault agents/output
 # Abre agents/output/graph_stats.json para ver distribuição de arestas
 ```
 
