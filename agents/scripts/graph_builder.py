@@ -48,7 +48,15 @@ def build_graph(nodes):
                       "edge_types": dict(et), "missing_books": dict(missing)}}
 
 def export_graph(vault_dir: str, output_dir: str = "."):
-    nodes = parse_vault(Path(vault_dir) / "Biblia")
+    biblia_path = Path(vault_dir) / "Bíblia"
+    if not biblia_path.exists():
+        # fallback para "Biblia" sem acento (vaults antigos)
+        biblia_path = Path(vault_dir) / "Biblia"
+    if not biblia_path.exists():
+        print(f"[ERRO] Diretório Bíblia não encontrado em: {vault_dir}")
+        print(f"       Verifique o caminho: {Path(vault_dir).resolve()}")
+        sys.exit(1)
+    nodes = parse_vault(biblia_path)
     graph = build_graph(nodes)
     out   = Path(output_dir)
     out.mkdir(exist_ok=True)
