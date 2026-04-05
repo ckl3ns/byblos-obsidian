@@ -9,3 +9,4 @@
 - Reanalisado o repositório apos merges recentes: `main` ja contem o fix de BUG-001 no `ntsk_parser.py`, alem das frentes de extractors, lint e limpeza de documentacao.
 - Branch `feat/graph-full-verse-nodes` criada para concentrar a proxima fase do trabalho.
 - Spec de design escrito em `docs/superpowers/specs/2026-04-05-unresolved-targets-graph-nodes-design.md`.
+- Plano de implementacao escrito em `docs/superpowers/plans/2026-04-05-full-verse-nodes-graph.md`.
