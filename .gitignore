@@ -54,12 +54,8 @@ api_keys.*
 vault/reports/lint/*
 !vault/reports/lint/.gitkeep
 
-# Arquivos auxiliares de agentes
-agents/_*.md
-agents/__*.md
-
 # Generated output
-agents/output/*.json
+agents/output/
 .pytest_workspace/
 .pytest_basetemp/
 .pytest_tmp/
@@ -67,10 +63,6 @@ pytest-cache-files-*/
 
 # Planning e relatórios locais
 .planning/
-findings.md
-progress.md
-task_plan.md
-LIMPEZA-*.md
 
 # Worktrees locais
 .worktrees/
